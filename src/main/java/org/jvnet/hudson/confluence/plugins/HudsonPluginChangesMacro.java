@@ -34,10 +34,14 @@ public class HudsonPluginChangesMacro extends BaseMacro {
         if (cacheRefresh == null || !cacheRefresh.matches("\\d+[hd]"))
             cacheRefresh = "7d";
 
+        // For testing, limit the set of plugins in report
+        String param = (String)parameters.get("prefix");
+        param = (param == null) ? "}" : ":prefix=" + param + "}";
+
         // Set a context param so -internal macro knows it is not called directly.
         renderContext.addParam("hudson-plugin-changes-passthru", "ok");
 
-        return "{cache:refresh=" + cacheRefresh + "|checkAttachments=false}{hudson"
-             + "-plugin-changes-internal}" + body + "{hudson-plugin-changes-internal}{cache}\n";
+        return "{cache:refresh=" + cacheRefresh + "|checkAttachments=false}{hudson-plugin"
+             + "-changes-internal" + param + body + "{hudson-plugin-changes-internal}{cache}\n";
     }
 }

@@ -60,8 +60,10 @@ public class HudsonPluginChangesReport extends BaseMacro {
             // Run report
             long start = System.currentTimeMillis();
             String startStr = new Date().toString();
-            Process p =
-                new ProcessBuilder("perl", tmp.getAbsolutePath()).redirectErrorStream(true).start();
+            String prefix = (String)parameters.get("prefix");
+            if (prefix == null || !prefix.matches("[a-zA-Z\\[\\]*.-]+")) prefix = "";
+            Process p = new ProcessBuilder(
+                "perl", tmp.getAbsolutePath(), prefix).redirectErrorStream(true).start();
             p.getOutputStream().close();
             String rpt = IOUtils.toString(p.getInputStream());
             p.getInputStream().close();
