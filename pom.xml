@@ -2,13 +2,13 @@
   <parent>
     <groupId>com.atlassian.confluence.plugin.base</groupId>
     <artifactId>confluence-plugin-base</artifactId>
-    <version>23</version>
+    <version>27</version>
   </parent>
   
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jvnet.hudson.confluence.plugins</groupId>
   <artifactId>hudson-plugin-changes-plugin</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.0</version>
   
   <name>Hudson Plugin Changes Macro Plugin</name>
   <packaging>atlassian-plugin</packaging>
@@ -21,25 +21,6 @@
     </developer>
   </developers>
   
-  <dependencies>
-    <dependency>
-      <groupId>com.atlassian.confluence</groupId>
-      <artifactId>confluence</artifactId>
-      <version>2.10.1</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>tangosol-coherence</groupId>
-          <artifactId>tangosol</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>tangosol-coherence</groupId>
-          <artifactId>coherence</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
