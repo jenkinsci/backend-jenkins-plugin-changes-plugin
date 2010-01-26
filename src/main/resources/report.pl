@@ -17,6 +17,10 @@
 # Get list of all tags, split into plugin name and version:
 my $base = 'https://svn.dev.java.net/svn/hudson'; my $tags = "$base/tags";
 my $pluginUrl = 'http://fisheye.hudson-ci.org/browse/Hudson/trunk/hudson/plugins';
+my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
+               '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
+               '%20where%20date%20%3E=%20',
+               '%20group%20by%20changeset%20return%20csid,%20comment,%20author,%20path');
 my $issueUrl = 'http://issues.hudson-ci.org/browse';
 my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x);
 open(LS,"svn ls $tags |") or die;
@@ -31,26 +35,27 @@ foreach $x (sort keys %x) {
   $skipEntry{$p} = 1;
   $ver = (sort byver @{$x{$x}})[0];
   ($cnt, $d1, $d2, $known) = &revcount($p,$tagrev=&tagrev("$x-$ver"));
+  $_ = "$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]";
   $p = "[$p|$pluginUrl/$p]";
-  print "| $p $ver | CURRENT\n" if $cnt == 0;
-  $since = "| since $ver | [r$tagrev|http://hudson-ci.org/commit/$tagrev] |";
-  print "| $p | $cnt rev", ($cnt > 1 ? "s $since $d1 to $d2" : " $since $d1"), " | $known\n"
+  print "| $p | | $ver | | | CURRENT\n" if $cnt == 0;
+  $since = "|$_] | since $ver | [r$tagrev|http://hudson-ci.org/commit/$tagrev] |";
+  print "| $p | [$cnt rev", ($cnt > 1 ? "s$since $d1 to $d2" : "$since $d1"), " | $known\n"
     if ($known or $cnt > 0);
 }
 
 # List unreleased plugins
 open(LS,"svn ls $base/trunk/hudson/plugins |") or die;
-$since = '| unreleased |';
 while (<LS>) {
   chomp; ($p = $_) =~ s!/$!!;
   next if exists $skipEntry{$p};
   ($cnt, $d1, $d2) = &revcount($p,0);
-  print "| [$p|$pluginUrl/$p] | $cnt rev", ($cnt > 1 ? "s $since $d1 to $d2" : " $since $d1"), "\n";
+  $_ = "|$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]] | $d1";
+  print "| [$p|$pluginUrl/$p] | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | unreleased\n";
 }
 close LS;
 
 foreach my $key (keys %knownRevs) {
-  print "| Unused data in KnownRevs: | $key | $knownRevs{$key}\n";
+  print "| Unused data in KnownRevs: | | | | $key | $knownRevs{$key}\n";
 }
 
 sub byver {
