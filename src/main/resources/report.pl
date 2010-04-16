@@ -1,10 +1,11 @@
 # Perl script to generate report of unreleased plugin changes in Hudson's subversion repository.
 # @author Alan.Harder@sun.com
-# %knownRevs, %skipTag, %skipEntry, %tagMap will be prepended before script is run.
+# %knownRevs, %skipTag, %skipEntry, %tagMap, %wikiMap will be prepended before script is run.
 #
-# %knownRevs = Map<pluginDir-rev-revcount,message>
+# %knownRevs = Map<pluginDir-rev-revcount,message> or <pluginDir-unreleased,message>
 #   If plugin "pluginDir" was last released at revision "rev" and there have been "revcount"
 #   revisions since then, show the given message in the report instead of the usual message.
+#   Or pluginDir-unreleased to show given message for an unreleased plugin.
 #
 # %skipTag = Map<tag,anything>
 #   Ignore these entries from /svn/hudson/tags.
@@ -13,10 +14,13 @@
 #
 # %tagMap = Map<tagBase,pluginDir-or-skip>
 #   Tags (without "-version#") to either ignore or map to the right pluginDir.
+#
+# %wikiMap = Map<pluginDir,wikiUrl>
+#   Data to avoid lookups in pom.xml files from svn (makes report run faster).
 
 # Get list of all tags, split into plugin name and version:
 my $base = 'https://svn.dev.java.net/svn/hudson'; my $tags = "$base/tags";
-my $pluginUrl = 'http://fisheye.hudson-ci.org/browse/Hudson/trunk/hudson/plugins';
+my $pluginUrl = 'http://wiki.hudson-ci.org/display/HUDSON';
 my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
                '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                '%20where%20date%20%3E=%20',
@@ -40,7 +44,7 @@ foreach $x (sort keys %x) {
   $ver = (sort byver @{$x{$x}})[0];
   ($cnt, $d1, $d2, $known) = &revcount($p,$tagrev=&tagrev("$x-$ver"));
   $_ = "$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]";
-  $p = "[$p|$pluginUrl/$p]";
+  $p = &pluginUrl($p);
   print "| $p | | $ver | | | CURRENT\n" if $cnt == 0;
   if ($known or $cnt > 0) {
     $since = "|$_] | since $ver | [r$tagrev|http://hudson-ci.org/commit/$tagrev] |";
@@ -58,7 +62,9 @@ while (<LS>) {
   ($cnt, $d1, $d2) = &revcount($p,0);
   $_ = "|$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]] | " . &colorize($d1, $today);
   $d2 = &colorize($d2, $today) if $cnt > 1;
-  print "| [$p|$pluginUrl/$p] | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | unreleased\n";
+  $known = delete $knownRevs{"$p-unreleased"};
+  $known = 'unreleased' unless $known;
+  print '| ' . &pluginUrl($p) . " | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | $known\n";
 }
 close LS;
 
@@ -101,6 +107,15 @@ sub revcount {
   $d = delete $knownRevs{"$plugin-".($fromrev-1)."-$cnt"};
   $d = 'Fixed: ' . join(' ', @fixed) unless ($d or !@fixed);
   return ($cnt, $d1, $d2, $d);
+}
+
+sub pluginUrl {
+  my ($plugin) = @_;
+  return "[$plugin|$pluginUrl/$wikiMap{$plugin}]" if exists $wikiMap{$plugin};
+  open(IN,"$svn cat $base/trunk/hudson/plugins/$plugin/pom.xml |") or die;
+  map(s|^.*<url>\s*(.*?)\s*</url>.*$|$1|s, @_ = grep(m|<url>.*wiki.*</url>|, <IN>));
+  close IN;
+  return @_ > 0 ? "[$plugin|$_[0]]" : $plugin;
 }
 
 sub today_val {
