@@ -48,7 +48,7 @@ public class HudsonPluginChangesReport extends BaseMacro {
             // Write temp file with map data plus perl code for report
             tmp = File.createTempFile("hudson-plugin-changes", ".pl");
             FileWriter out = new FileWriter(tmp);
-            out.write("\nuse strict;\nmy (%knownRevs, %skipTag, %skipEntry, %tagMap, %wikiMap);\n"
+            out.write("\nuse strict;\nmy (%knownRevs, %skipTag, %skipEntry, %tagMap);\n"
                       + parseBody(body) + ");\n\n");
             InputStream in = getClass().getResourceAsStream("/report.pl");
             if (in != null) {
@@ -84,7 +84,7 @@ public class HudsonPluginChangesReport extends BaseMacro {
     private static String parseBody(String body) {
         // Parse macro body and convert into perl variable definitions:
         int section = 0, i;
-        final String[] mapVars = { "skipTag", "skipEntry", "tagMap", "wikiMap" };
+        final String[] mapVars = { "skipTag", "skipEntry", "tagMap" };
         final StringBuilder mapBuf = new StringBuilder("%knownRevs = (\n");
         final String tokenChars = "[a-zA-Z0-9+._-]+";
         final Pattern knownRev = Pattern.compile(
@@ -114,7 +114,6 @@ public class HudsonPluginChangesReport extends BaseMacro {
                     mapBuf.append(" '").append(m.group(1)).append("' => 1,\n");
                 break;
               case 3: // %tagMap
-              case 4: // %wikiMap
                 if ((m = tagMap.matcher(line)).matches())
                     mapBuf.append(" '").append(m.group(1))
                           .append("' => '").append(m.group(2)).append("',\n");

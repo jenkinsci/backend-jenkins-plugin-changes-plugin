@@ -1,6 +1,6 @@
 # Perl script to generate report of unreleased plugin changes in Hudson's subversion repository.
 # @author Alan.Harder@sun.com
-# %knownRevs, %skipTag, %skipEntry, %tagMap, %wikiMap will be prepended before script is run.
+# %knownRevs, %skipTag, %skipEntry, %tagMap will be prepended before script is run.
 #
 # %knownRevs = Map<pluginDir-rev-revcount,message> or <pluginDir-unreleased,message>
 #   If plugin "pluginDir" was last released at revision "rev" and there have been "revcount"
@@ -14,13 +14,9 @@
 #
 # %tagMap = Map<tagBase,pluginDir-or-skip>
 #   Tags (without "-version#") to either ignore or map to the right pluginDir.
-#
-# %wikiMap = Map<pluginDir,wikiUrl>
-#   Data to avoid lookups in pom.xml files from svn (makes report run faster).
 
 # Get list of all tags, split into plugin name and version:
 my $base = 'https://svn.dev.java.net/svn/hudson'; my $tags = "$base/tags";
-my $pluginUrl = 'http://wiki.hudson-ci.org/display/HUDSON';
 my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
                '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                '%20where%20date%20%3E=%20',
@@ -29,12 +25,23 @@ my $issueUrl = 'http://issues.hudson-ci.org/browse';
 my $prefix = $ARGV[0];
 my $svn = 'svn --non-interactive';
 my $today = &today_val;
-my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x);
+my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x, %updateCenter);
 open(LS,"$svn ls $tags |") or die;
 while (<LS>) {
   push(@{$x{$1}}, $2) if m!^(.*)-([\d._]+)/?$! and not exists $skipTag{"$1-$2"};
 }
 close LS;
+open(JSON,"$svn cat $base/trunk/www2/update-center.json |") or die;
+while (<JSON>) {
+  $p = $1 if s/(?:^|{)\s*"(.*?)"\s*:\s*{//;
+  $ver = $1 if s/(?:^|,)\s*"version"\s*:\s*"(.*?)"//;
+  $x = $1 if s/(?:^|,)\s*"wiki"\s*:\s*"(.*?)"//;
+  if (/^    },\s*$/) {
+    $updateCenter{$p} = { 'version' => $ver, 'wiki' => $x };
+    $p = $ver = $x = undef;
+  }
+}
+close JSON;
 
 # Get "Last Changed Rev" of latest version of each plugin, then get more recent revs in trunk
 foreach $x (sort keys %x) {
@@ -43,14 +50,16 @@ foreach $x (sort keys %x) {
   $skipEntry{$p} = 1;
   $ver = (sort byver @{$x{$x}})[0];
   ($cnt, $d1, $d2, $known) = &revcount($p,$tagrev=&tagrev("$x-$ver"));
-  $_ = "$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]";
-  $p = &pluginUrl($p);
-  print "| $p | | $ver | | | CURRENT\n" if $cnt == 0;
+  $since = "$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]";
+  $p = &pluginUrl($x=$p);
+  $x = %{delete $updateCenter{$x}}->{'version'};
+  $x = $ver eq $x ? '' : " (_Version mismatch: json has ${x}_)";
+  print "| $p | | $ver | | | CURRENT$x\n" if $cnt == 0;
   if ($known or $cnt > 0) {
-    $since = "|$_] | since $ver | [r$tagrev|http://hudson-ci.org/commit/$tagrev] |";
+    $since = "|$since] | since $ver | [r$tagrev|http://hudson-ci.org/commit/$tagrev] |";
     $d1 = &colorize($d1, $today);
     $d2 = &colorize($d2, $today) if $cnt > 1;
-    print "| $p | [$cnt rev", ($cnt > 1 ? "s$since $d1 to $d2" : "$since $d1"), " | $known\n";
+    print "| $p | [$cnt rev", ($cnt > 1 ? "s$since $d1 to $d2" : "$since $d1"), " | $known$x\n";
   }
 }
 
@@ -60,18 +69,26 @@ while (<LS>) {
   chomp; ($p = $_) =~ s!/$!!;
   next if exists $skipEntry{$p} or ($prefix and $p !~ /^$prefix/);
   ($cnt, $d1, $d2) = &revcount($p,0);
-  $_ = "|$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]] | " . &colorize($d1, $today);
+  $_ = " | | |$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]] | " . &colorize($d1, $today);
   $d2 = &colorize($d2, $today) if $cnt > 1;
   $known = delete $knownRevs{"$p-unreleased"};
   $known = 'unreleased' unless $known;
-  print '| ' . &pluginUrl($p) . " | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | $known\n";
+  $p = &pluginUrl($x=$p);
+  $x = %{delete $updateCenter{$x}}->{'version'};
+  $known .= " (_Json data says ${x}_)" if $x;
+  print "| $p | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | $known\n";
 }
 close LS;
 
-unless ($prefix) {
-  foreach my $key (keys %knownRevs) {
-    print "| Unused data in KnownRevs: | | | | $key | $knownRevs{$key}\n";
-  }
+foreach my $key (keys %updateCenter) {
+  next if $prefix and $key !~ /^$prefix/;
+  $x = delete $knownRevs{"$key-unreleased"};
+  print ($x ? "| $key | | $updateCenter{$key}{version} | | | $x\n"
+      : "| Unused data from update-center.json: | | | | $key | $updateCenter{$key}{version}\n");
+}
+foreach my $key (keys %knownRevs) {
+  next if $prefix and $key !~ /^$prefix/;
+  print "| Unused data in KnownRevs: | | | | $key | $knownRevs{$key}\n";
 }
 
 sub byver {
@@ -111,8 +128,8 @@ sub revcount {
 
 sub pluginUrl {
   my ($plugin) = @_;
-  return "[$plugin|$pluginUrl/$wikiMap{$plugin}]" if exists $wikiMap{$plugin};
-  open(IN,"$svn cat $base/trunk/hudson/plugins/$plugin/pom.xml |") or die;
+  return "[$plugin|$updateCenter{$plugin}{wiki}]" if $updateCenter{$plugin}{'wiki'};
+  open(IN,"$svn cat $base/trunk/hudson/plugins/$plugin/pom.xml 2>/dev/null |") or die;
   map(s|^.*<url>\s*(.*?)\s*</url>.*$|$1|s, @_ = grep(m|<url>.*wiki.*</url>|, <IN>));
   close IN;
   return @_ > 0 ? "[$plugin|$_[0]]" : $plugin;
