@@ -44,16 +44,15 @@ while (<JSON>) {
 close JSON;
 
 # Get "Last Changed Rev" of latest version of each plugin, then get more recent revs in trunk
-foreach $x (sort keys %x) {
+foreach $x (sort bydir keys %x) {
   next if ($p = exists $tagMap{$x} ? $tagMap{$x} : $x) eq 'skip';
   next if $prefix and $p !~ /^$prefix/;
   $skipEntry{$p} = 1;
   $ver = (sort byver @{$x{$x}})[0];
   ($cnt, $d1, $d2, $known) = &revcount($p,$tagrev=&tagrev("$x-$ver"));
   $since = "$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]";
-  $p = &pluginUrl($x=$p);
-  $x = %{delete $updateCenter{$x}}->{'version'};
-  $x = $ver eq $x ? '' : " (_Version mismatch: json has ${x}_)";
+  ($p,$x) = &updateCenterData($p,$x);
+  $x = $ver eq $x ? '' : (($known ? "\n" : " ") . "(_Version mismatch: json has ${x}_)");
   print "| $p | | $ver | | | CURRENT$x\n" if $cnt == 0;
   if ($known or $cnt > 0) {
     $since = "|$since] | since $ver | [r$tagrev|http://hudson-ci.org/commit/$tagrev] |";
@@ -69,12 +68,11 @@ while (<LS>) {
   chomp; ($p = $_) =~ s!/$!!;
   next if exists $skipEntry{$p} or ($prefix and $p !~ /^$prefix/);
   ($cnt, $d1, $d2) = &revcount($p,0);
-  $_ = " | | |$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]] | " . &colorize($d1, $today);
+  $_ = "|$revsUrl[0]$p$revsUrl[1]$p$revsUrl[2]$d1$revsUrl[3]] | | | " . &colorize($d1, $today);
   $d2 = &colorize($d2, $today) if $cnt > 1;
   $known = delete $knownRevs{"$p-unreleased"};
   $known = 'unreleased' unless $known;
-  $p = &pluginUrl($x=$p);
-  $x = %{delete $updateCenter{$x}}->{'version'};
+  ($p,$x) = &updateCenterData($p,$p);
   $known .= " (_Json data says ${x}_)" if $x;
   print "| $p | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | $known\n";
 }
@@ -82,15 +80,21 @@ close LS;
 
 foreach my $key (keys %updateCenter) {
   next if $prefix and $key !~ /^$prefix/;
-  $x = delete $knownRevs{"$key-unreleased"};
-  print ($x ? "| $key | | $updateCenter{$key}{version} | | | $x\n"
-      : "| Unused data from update-center.json: | | | | $key | $updateCenter{$key}{version}\n");
+  next if ($x = delete $knownRevs{"$key-unreleased"}) eq 'skip';
+  $x = 'Found in update-center.json, not in svn' unless $x;
+  ($p,$ver) = &updateCenterData($key,$key);
+  print "| $p | | $ver | | | $x\n";
 }
 foreach my $key (keys %knownRevs) {
   next if $prefix and $key !~ /^$prefix/;
   print "| Unused data in KnownRevs: | | | | $key | $knownRevs{$key}\n";
 }
 
+sub bydir {
+  my ($x,$y) = (exists $tagMap{$a} ? $tagMap{$a} : $a, exists $tagMap{$b} ? $tagMap{$b} : $b);
+  lc $x cmp lc $y;
+}
+  
 sub byver {
   my ($i,$x,@a,@b);
   @a=split(/[._]/, $a);
@@ -126,13 +130,20 @@ sub revcount {
   return ($cnt, $d1, $d2, $d);
 }
 
-sub pluginUrl {
-  my ($plugin) = @_;
-  return "[$plugin|$updateCenter{$plugin}{wiki}]" if $updateCenter{$plugin}{'wiki'};
-  open(IN,"$svn cat $base/trunk/hudson/plugins/$plugin/pom.xml 2>/dev/null |") or die;
-  map(s|^.*<url>\s*(.*?)\s*</url>.*$|$1|s, @_ = grep(m|<url>.*wiki.*</url>|, <IN>));
-  close IN;
-  return @_ > 0 ? "[$plugin|$_[0]]" : $plugin;
+sub updateCenterData {
+  my ($pluginDir, $tagName) = @_; # Hopefully one of these match the artifactId
+  my ($data, $pluginUrl, $version);
+  $data = delete $updateCenter{$pluginDir} || delete $updateCenter{$tagName};
+  $version = $data->{'version'} if $data;
+  if ($data->{'wiki'}) {
+    $pluginUrl = "[$pluginDir|$data->{wiki}]";
+  } else {
+    open(IN,"$svn cat $base/trunk/hudson/plugins/$pluginDir/pom.xml 2>/dev/null |") or die;
+    map(s|^.*<url>\s*(.*?)\s*</url>.*$|$1|s, @_ = grep(m|<url>.*wiki.*</url>|, <IN>));
+    close IN;
+    $pluginUrl = @_ > 0 ? "[$pluginDir|$_[0]]" : $pluginDir;
+  }
+  return ($pluginUrl, $version);
 }
 
 sub today_val {
