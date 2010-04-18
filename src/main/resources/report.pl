@@ -36,7 +36,7 @@ while (<JSON>) {
   $p = $1 if s/(?:^|{)\s*"(.*?)"\s*:\s*{//;
   $ver = $1 if s/(?:^|,)\s*"version"\s*:\s*"(.*?)"//;
   $x = $1 if s/(?:^|,)\s*"wiki"\s*:\s*"(.*?)"//;
-  if (/^    },\s*$/) {
+  if (/^    },?\s*$/) {
     $updateCenter{$p} = { 'version' => $ver, 'wiki' => $x };
     $p = $ver = $x = undef;
   }
@@ -73,7 +73,7 @@ while (<LS>) {
   $known = delete $knownRevs{"$p-unreleased"};
   $known = 'unreleased' unless $known;
   ($p,$x) = &updateCenterData($p,$p);
-  $known .= " (_Json data says ${x}_)" if $x;
+  $known .= " (_json data says ${x}_)" if $x;
   print "| $p | [$cnt rev", ($cnt > 1 ? "s$_ to $d2" : $_), " | $known\n";
 }
 close LS;
@@ -116,17 +116,22 @@ sub tagrev {
 }
 
 sub revcount {
-  my ($plugin, $fromrev, $cnt, $d, $d1, $d2, @fixed) = ($_[0], $_[1]+1, 0);
+  my ($plugin, $fromrev, $cnt, $l10n, $d, $d1, $d2, @fixed) = ($_[0], $_[1]+1, 0, 0);
   open(IN,"$svn log -r $fromrev:HEAD $base/trunk/hudson/plugins/$plugin |") or die;
   while (<IN>) {
     if (/^r\d+ \| [^|]* \| ([\d-]+) /) { $cnt++; $d = $1 }
     if (/^bumping up POM version|prepare for next development iteration/) { $cnt--; $d = '' }
-    while (s/FIXED ([A-Z]+-(\d+))//) { push(@fixed, "[$2|$issueUrl/$1]") }
+    $l10n++ if /^Integrated community contributed localizations\.?\s*$/i;
+    while (s/FIXED ([A-Z]+-(\d+))//i) { push(@fixed, "[$2|$issueUrl/$1]") }
     if (/^---------/ and $d) { $d2 = $d; $d1 = $d unless $d1 }
   }
   close IN;
   $d = delete $knownRevs{"$plugin-".($fromrev-1)."-$cnt"};
   $d = 'Fixed: ' . join(' ', @fixed) unless ($d or !@fixed);
+  if ($l10n) {
+    if (!$d and $l10n == $cnt) { $d = '~CURRENT -- l10n' }
+    elsif (!$d or $d =~ /^Fixed:/) { $d .= ' l10n' }
+  }
   return ($cnt, $d1, $d2, $d);
 }
 
