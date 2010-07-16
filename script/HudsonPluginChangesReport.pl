@@ -22,7 +22,7 @@ my $rpt = `perl run.pl $prefix`;
 # Group results and wikify
 $rpt = &wikify($rpt);
 $time = time - $time;
-print $rpt, "\nGenerated at: ", $start, " in ",
+print $rpt, "Generated at: $start in ",
       int($time/60), " min ", ($time%60), " sec.\n";
 
 unlink "run.pl";
@@ -60,7 +60,8 @@ sub wikify {
   my ($rpt) = @_;
   my (@current, @unreleased, @other, $last);
   foreach (split /[\n\r]+/, $rpt) {
-    unless (/^\|/)       {  push(@$last, $_) }
+    next if /^svn: Write error: Broken pipe$/;  # Ignore these
+    unless (/^\|/)       { push(@$last, $_) }
     elsif (/CURRENT/)    { push(@current, $_); $last = \@current }
     elsif (/unreleased/) { push(@unreleased, $_); $last = \@unreleased }
     else                 { push(@other, $_); $last = \@other }
