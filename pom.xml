@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jvnet.hudson.confluence.plugins</groupId>
   <artifactId>hudson-plugin-changes-plugin</artifactId>
-  <version>1.5</version>
+  <version>1.6-SNAPSHOT</version>
   
   <name>Hudson Plugin Changes Macro Plugin</name>
   <packaging>atlassian-plugin</packaging>
