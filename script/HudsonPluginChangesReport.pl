@@ -16,13 +16,14 @@ close OUT;
 
 # Run report
 my $time = time;
-my $start = `date`;
+my $start = `date`; chomp($start);
 my $rpt = `perl run.pl $prefix`;
 
 # Group results and wikify
 $rpt = &wikify($rpt);
 $time = time - $time;
-print $rpt, "Generated at: $start in ",
+print "This is a report of unreleased changes for plugins in Hudson's subversion repository.\n",
+      "It is updated once per week.\n\n", $rpt, "Generated at: $start in ",
       int($time/60), " min ", ($time%60), " sec.\n";
 
 unlink "run.pl";
