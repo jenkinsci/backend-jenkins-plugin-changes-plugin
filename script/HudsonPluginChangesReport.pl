@@ -61,7 +61,6 @@ sub wikify {
   my ($rpt) = @_;
   my (@current, @unreleased, @other, $last);
   foreach (split /[\n\r]+/, $rpt) {
-    next if /^svn: Write error: Broken pipe$/;  # Ignore these
     unless (/^\|/)       { push(@$last, $_) }
     elsif (/CURRENT/)    { push(@current, $_); $last = \@current }
     elsif (/unreleased/) { push(@unreleased, $_); $last = \@unreleased }
