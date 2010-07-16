@@ -1,5 +1,5 @@
 # Perl script to generate report of unreleased plugin changes in Hudson's subversion repository.
-# @author Alan.Harder@sun.com
+# @author Alan Harder (mindless@dev.java.net)
 # %knownRevs, %skipTag, %skipEntry, %tagMap will be prepended before script is run.
 #
 # %knownRevs = Map<pluginDir-rev-revcount,message> or <pluginDir-unreleased,message>
@@ -121,7 +121,7 @@ sub revcount {
   while (<IN>) {
     if (/^r\d+ \| [^|]* \| ([\d-]+) /) { $cnt++; $d = $1 }
     if (/^bumping up POM version|prepare for next development iteration/) { $cnt--; $d = '' }
-    $l10n++ if /^Integrated community contributed localizations\.?\s*$/i;
+    $l10n++ if /^(integrated )?community[- ]contributed (localization|translation)\.?\s*$/i;
     while (s/FIXED ([A-Z]+-(\d+))//i) { push(@fixed, "[$2|$issueUrl/$1]") }
     if (/^---------/ and $d) { $d2 = $d; $d1 = $d unless $d1 }
   }

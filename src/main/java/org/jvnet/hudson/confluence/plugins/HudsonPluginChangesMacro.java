@@ -11,7 +11,7 @@ import com.atlassian.renderer.v2.macro.MacroException;
  * This macro wraps a call to {hudson-plugin-changes-internal} in a {cache} macro.
  * Accepts cacheRefresh=## parameter to override default cache time of seven days.
  * ## is number followed by d or h (for days/hours; min/sec not allowed.. too short!).
- * @author Alan.Harder@sun.com
+ * @author Alan Harder (mindless@dev.java.net)
  */
 public class HudsonPluginChangesMacro extends BaseMacro {
 

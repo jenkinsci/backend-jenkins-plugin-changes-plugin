@@ -21,7 +21,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Confluence macro to execute a perl script that generates a report
  * of unreleased plugin changes in Hudson's subversion repository.
- * @author Alan.Harder@sun.com
+ * @author Alan Harder (mindless@dev.java.net)
  */
 public class HudsonPluginChangesReport extends BaseMacro {
 
@@ -58,19 +58,21 @@ public class HudsonPluginChangesReport extends BaseMacro {
             out.close();
 
             // Run report
-            long start = System.currentTimeMillis();
+            long time = System.currentTimeMillis();
             String startStr = new Date().toString();
             String prefix = (String)parameters.get("prefix");
             if (prefix == null || !prefix.matches("[a-zA-Z\\[\\]*.-]+")) prefix = "";
-            Process p = new ProcessBuilder(
+            final Process p = new ProcessBuilder(
                 "perl", tmp.getAbsolutePath(), prefix).redirectErrorStream(true).start();
             p.getOutputStream().close();
             String rpt = IOUtils.toString(p.getInputStream());
             p.getInputStream().close();
 
             // Group results and wikify
-            return wikify(rpt) + "\nGenerated at: " + startStr + " in "
-                   + (System.currentTimeMillis() - start)/1000 + " seconds.\n{cache}\n";
+            rpt = wikify(rpt);
+            time = System.currentTimeMillis() - time;
+            return rpt + "\nGenerated at: " + startStr + " in "
+                   + time/60000 + " min " + (time%60000)/1000 + " sec.\n";
         }
         catch (IOException e) {
             return "{warning:title=Report Script Error}\n"
@@ -126,10 +128,12 @@ public class HudsonPluginChangesReport extends BaseMacro {
     private static String wikify(String report) {
         final StringBuilder current = new StringBuilder(), unreleased = new StringBuilder(),
                             other = new StringBuilder();
+        StringBuilder last = other;
         for (String line : report.split("[\\n\\r]+")) {
-            if (line.indexOf("CURRENT") > 0)         current.append(line).append('\n');
-            else if (line.indexOf("unreleased") > 0) unreleased.append(line).append('\n');
-            else                                     other.append(line).append('\n');
+            if (line.charAt(0) != '|')                last.append(line).append('\n');
+            else if (line.indexOf("CURRENT") > 0)    (last=current).append(line).append('\n');
+            else if (line.indexOf("unreleased") > 0) (last=unreleased).append(line).append('\n');
+            else                                     (last=other).append(line).append('\n');
         }
         return "h3. Plugin Changes\n" + other
                + "\nh3. Unreleased Plugins\n" + unreleased
