@@ -5,46 +5,32 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
-import com.atlassian.renderer.v2.SubRenderer;
-import com.atlassian.renderer.v2.macro.BaseMacro;
-import com.atlassian.renderer.v2.macro.MacroException;
-
 import org.apache.commons.io.IOUtils;
 
 /**
- * Confluence macro to execute a perl script that generates a report
- * of unreleased plugin changes in Hudson's subversion repository.
+ * Execute a perl script that generates a wiki report of unreleased plugin changes
+ * in Hudson's subversion repository.
  * @author Alan Harder (mindless@dev.java.net)
  */
-public class HudsonPluginChangesReport extends BaseMacro {
+public class HudsonPluginChangesReport {
 
-    public boolean isInline() {
-        return false;
+    public static void main(String[] args) {
+        Map params = new HashMap();
+        if (args.length > 0) params.put("prefix", args[0]);
+        System.out.print(new HudsonPluginChangesReport().execute(params, System.in));
     }
-    
-    public boolean hasBody() {
-        return true;
-    }
-    
-    public RenderMode getBodyRenderMode() {
-        return null;  // null means this macro returns wiki text not html
-    }
-    
-    public String execute(Map parameters, String body, RenderContext renderContext)
-            throws MacroException {
 
-        if (!"ok".equals(renderContext.getParam("hudson-plugin-changes-passthru")))
-            return "{warning}Do not use hudson-plugin-changes-internal directly!{warning}";
-
+    public String execute(Map parameters, InputStream bodyStream) {
         File tmp = null;
         try {
+            String body = IOUtils.toString(bodyStream);
+
             // Write temp file with map data plus perl code for report
             tmp = File.createTempFile("hudson-plugin-changes", ".pl");
             FileWriter out = new FileWriter(tmp);
