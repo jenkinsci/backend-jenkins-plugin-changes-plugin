@@ -120,7 +120,7 @@ sub revcount {
   open(IN,"$svn log -r $fromrev:HEAD $base/trunk/hudson/plugins/$plugin |") or die;
   while (<IN>) {
     if (/^r\d+ \| [^|]* \| ([\d-]+) /) { $cnt++; $d = $1; next }
-    if (/^(prepare for next development iteration|bumping up POM version)/) { $cnt--; $d = '' }
+    if (/prepare for next development iteration|^bumping up POM version/) { $cnt--; $d = '' }
     $l10n++ if /^(integrated )?community[- ]contributed (localization|translation)/i;
     while (s/FIXED ([A-Z]+-(\d+))//i) { push(@fixed, "[$2|$issueUrl/$1]") }
     if (/^---------/ and $d) { $d2 = $d; $d1 = $d unless $d1 }
