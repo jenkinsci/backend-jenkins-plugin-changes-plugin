@@ -7,7 +7,7 @@ my $prefix = $ARGV[0];
 
 # Write temp file with map data plus perl code for report
 open(OUT, ">run.pl") or die;
-print OUT "\nuse strict;\nmy (%knownRevs, %skipTag, %skipEntry, %tagMap);\n";
+print OUT "\nuse strict;\nmy (%knownRevs, %skipTag, %skipEntry, %tagMap, %jsonMap);\n";
 print OUT &parseData, ");\n\n";
 open(IN, "<report.pl") or die;
 print OUT <IN>;
@@ -32,7 +32,7 @@ unlink "run.pl";
 sub parseData() {
   # Parse input and convert into perl variable definitions:
   my $section = 0;
-  my @mapVars = ( "skipTag", "skipEntry", "tagMap" );
+  my @mapVars = ( "skipTag", "skipEntry", "tagMap", "jsonMap" );
   my ($mapBuf, $tokenChars) = ("%knownRevs = (\n", "[a-zA-Z0-9+._-]+");
   while (<STDIN>) {
     s/#.*$//;  # Remove inline comment
@@ -49,7 +49,7 @@ sub parseData() {
       if (/^\s*($tokenChars)\s*$/) {
         $mapBuf .= " '$1' => 1,\n";
       }
-    } elsif ($section == 3) { # %tagMap
+    } elsif ($section == 3 or $section == 4) { # %tagMap or %jsonMap
       if (/^\s*($tokenChars)\s*\|\s*($tokenChars)\s*$/) {
         $mapBuf .= " '$1' => '$2',\n";
       }

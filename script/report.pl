@@ -16,7 +16,8 @@
 #   Tags (without "-version#") to either ignore or map to the right pluginDir.
 
 # Get list of all tags, split into plugin name and version:
-my $base = 'https://svn.dev.java.net/svn/hudson'; my $tags = "$base/tags";
+my $base = 'https://svn.dev.java.net/svn/hudson';
+my ($tags, $tags2) = ("$base/tags", "$base/tags/global-build-stats"); # 1 plugin uses subdir
 my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
                '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                '%20where%20date%20%3E=%20',
@@ -26,7 +27,7 @@ my $prefix = $ARGV[0];
 my $svn = 'svn --non-interactive';
 my $today = &today_val;
 my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x, %updateCenter);
-open(LS,"$svn ls $tags |") or die;
+open(LS,"$svn ls $tags $tags2 |") or die;
 while (<LS>) {
   push(@{$x{$1}}, $2) if m!^(.*)-([\d._]+)/?$! and not exists $skipTag{"$1-$2"};
 }
@@ -108,11 +109,14 @@ sub byver {
 
 sub tagrev {
   my ($tag, $rev) = ($_[0], '');
-  open(TAG, "$svn info $tags/$tag |") or die;
-  while (<TAG>) {
-    do { $rev = $1; <TAG>; last; } if /^Last Changed Rev:\s*(\d+)/;
+  foreach ("$tags/$tag", "$tags2/$tag") {
+    open(TAG, "$svn info $_ |") or die;
+    while (<TAG>) {
+      do { $rev = $1; <TAG>; last; } if /^Last Changed Rev:\s*(\d+)/;
+    }
+    close TAG;
+    last if $rev;
   }
-  close TAG;
   return $rev;
 }
 
@@ -139,7 +143,8 @@ sub revcount {
 sub updateCenterData {
   my ($pluginDir, $tagName) = @_; # Hopefully one of these match the artifactId
   my ($data, $pluginUrl, $version);
-  $data = delete $updateCenter{$pluginDir} || delete $updateCenter{$tagName};
+  $data = delete $updateCenter{$pluginDir} || delete $updateCenter{$tagName}
+                                           || delete $updateCenter{$jsonMap{$pluginDir}};
   $version = $data->{'version'} if $data;
   if ($data->{'wiki'}) {
     $pluginUrl = "[$pluginDir|$data->{wiki}]";
