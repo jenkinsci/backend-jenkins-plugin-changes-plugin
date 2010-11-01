@@ -18,6 +18,7 @@ close OUT;
 my $time = time;
 my $start = `date`; chomp($start);
 my $rpt = `perl run.pl $prefix`;
+$? and die "Error from report.pl";
 
 # Group results and wikify
 $rpt = &wikify($rpt);

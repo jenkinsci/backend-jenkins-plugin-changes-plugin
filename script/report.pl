@@ -42,6 +42,7 @@ while (<JSON>) {
   }
 }
 close JSON;
+%updateCenter or die "No data from update-center.json";
 
 # Get "Last Changed Rev" of latest version of each plugin, then get more recent revs in trunk
 foreach $x (sort bydir keys %x) {
