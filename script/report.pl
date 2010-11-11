@@ -1,11 +1,13 @@
 # Perl script to generate report of unreleased plugin changes in Hudson's subversion repository.
 # @author Alan Harder (mindless@dev.java.net)
-# %knownRevs, %skipTag, %skipEntry, %tagMap will be prepended before script is run.
+# %knownRevs, %skipTag, %skipEntry, %tagMap, %jsonMap will be prepended before script is run.
 #
 # %knownRevs = Map<pluginDir-rev-revcount,message> or <pluginDir-unreleased,message>
+#                                                  or <pluginId-github,githubRepo>
 #   If plugin "pluginDir" was last released at revision "rev" and there have been "revcount"
 #   revisions since then, show the given message in the report instead of the usual message.
 #   Or pluginDir-unreleased to show given message for an unreleased plugin.
+#   Or pluginId-github to specify a plugin is hosted at github.com with given repository name.
 #
 # %skipTag = Map<tag,anything>
 #   Ignore these entries from /svn/hudson/tags.
@@ -14,8 +16,11 @@
 #
 # %tagMap = Map<tagBase,pluginDir-or-skip>
 #   Tags (without "-version#") to either ignore or map to the right pluginDir.
+#
+# %jsonMap = Map<pluginDir,idInJson>
+#   Map to ID used in update-center.json when it doesn't match pluginDir.
+use XML::Parser;
 
-# Get list of all tags, split into plugin name and version:
 my $base = 'https://svn.dev.java.net/svn/hudson';
 my ($tags, $tags2) = ("$base/tags", "$base/tags/global-build-stats"); # 1 plugin uses subdir
 my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
@@ -27,11 +32,15 @@ my $prefix = $ARGV[0];
 my $svn = 'svn --non-interactive';
 my $today = &today_val;
 my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x, %updateCenter);
+
+# Get list of all svn tags, split into plugin name and version
 open(LS,"$svn ls $tags $tags2 |") or die;
 while (<LS>) {
   push(@{$x{$1}}, $2) if m!^(.*)-([\d._]+)/?$! and not exists $skipTag{"$1-$2"};
 }
 close LS;
+
+# Read Update Center data
 open(JSON,"$svn cat $base/trunk/www2/update-center.json |") or die;
 while (<JSON>) {
   $p = $1 if s/(?:^|{)\s*"(.*?)"\s*:\s*{//;
@@ -80,11 +89,13 @@ while (<LS>) {
 }
 close LS;
 
+# List update center data not reported so far
 foreach my $key (keys %updateCenter) {
   next if $prefix and $key !~ /^$prefix/;
   next if ($x = delete $knownRevs{"$key-unreleased"}) eq 'skip';
-  $x = 'Found in update-center.json, not in svn' unless $x;
   ($p,$ver) = &updateCenterData($key,$key);
+  $x = &gitRevs($x,$ver) if (!$x and ($x = delete $knownRevs{"$key-github"}));
+  $x = 'Found in update-center.json, not in svn' unless $x;
   print "| $p | | $ver | | | $x\n";
 }
 foreach my $key (keys %knownRevs) {
@@ -175,3 +186,34 @@ sub colorize {
   return '{color:#' . $_[$a] . (9 - $a) . '6}' . $_[0] . '{color}';
 }
 
+sub gitRevs {
+  my ($repo, $ver, $doc, $i, $j) = ($_[0], $_[1], XML::Parser->new(Style=>'Tree'));
+  open(XML, "curl -s https://github.com/hudson/$repo/commits/master.atom |") or die;
+  my ($xml, $done, $count, $rev, $list, $entry, $title) = ($doc->parse(*XML), 0, 0);
+  close XML;
+
+  $list = $xml->[1];
+  parse: for ($i = 0; $i < $#$list; $i++) {
+    if ($list->[$i] eq 'entry') {
+      $entry = $list->[++$i];
+      for ($j = 0; $j < $#$entry; $j++) {
+        if ($entry->[$j] eq 'title') {
+          $title = $entry->[++$j]->[2];
+          if ($done) {
+            $rev = $1 if $title =~ /prepare release.*-([\d._]+)\s*$/;
+            last parse;
+          } elsif ($title =~ /prepare for next dev/) {
+            $done = 1;
+          } else {
+            $count++;
+          }
+        }
+      }
+    }
+  }
+  $title = $count == 0 ? 'CURRENT' : "[$count rev" . ($count > 1 ? 's' : '')
+         . "|https://github.com/hudson/$repo/commits/master/] after release $rev";
+  $title .= ' (_Version mismatch' . ($count > 0 ? '' : ": github has ${rev}") . '_)'
+    if $rev ne $ver;
+  return $title;
+}
