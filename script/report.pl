@@ -22,7 +22,9 @@
 use XML::Parser;
 
 my $base = 'https://svn.dev.java.net/svn/hudson';
-my ($tags, $tags2) = ("$base/tags", "$base/tags/global-build-stats"); # 1 plugin uses subdir
+my %tags = ("" => "$base/tags",
+            "global-build-stats" => "$base/tags/global-build-stats",  # 2 plugins use subdir
+            "scm-sync-configuration" => "$base/tags/scm-sync-configuration");
 my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
                '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                '%20where%20date%20%3E=%20',
@@ -34,7 +36,7 @@ my $today = &today_val;
 my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x, %updateCenter);
 
 # Get list of all svn tags, split into plugin name and version
-open(LS,"$svn ls $tags $tags2 |") or die;
+open(LS, "$svn ls " . join(" ", values %tags) . " |") or die;
 while (<LS>) {
   push(@{$x{$1}}, $2) if m!^(.*)-([\d._]+)/?$! and not exists $skipTag{"$1-$2"};
 }
@@ -120,14 +122,13 @@ sub byver {
 
 sub tagrev {
   my ($tag, $rev) = ($_[0], '');
-  foreach ("$tags/$tag", "$tags2/$tag") {
-    open(TAG, "$svn info $_ |") or die;
-    while (<TAG>) {
-      do { $rev = $1; <TAG>; last; } if /^Last Changed Rev:\s*(\d+)/;
-    }
-    close TAG;
-    last if $rev;
+  $tag =~ /^(.*)-[\d._]+$/;
+  $_ = $tags{$1} || $tags{''};
+  open(TAG, "$svn info $_ |") or die;
+  while (<TAG>) {
+    do { $rev = $1; <TAG>; last; } if /^Last Changed Rev:\s*(\d+)/;
   }
+  close TAG;
   return $rev;
 }
 
