@@ -124,7 +124,7 @@ sub tagrev {
   my ($tag, $rev) = ($_[0], '');
   $tag =~ /^(.*)-[\d._]+$/;
   $_ = $tags{$1} || $tags{''};
-  open(TAG, "$svn info $_ |") or die;
+  open(TAG, "$svn info $_/$tag |") or die;
   while (<TAG>) {
     do { $rev = $1; <TAG>; last; } if /^Last Changed Rev:\s*(\d+)/;
   }
