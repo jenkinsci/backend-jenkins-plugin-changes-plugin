@@ -36,7 +36,7 @@ my $today = &today_val;
 my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x, %updateCenter);
 
 # Read Update Center data
-open(JSON,"$svn cat $base/trunk/www2/update-center.json |") or die;
+open(JSON,'curl -s http://updates.hudson-labs.org/update-center.json |') or die;
 while (<JSON>) {
   $p = $1 if s/(?:^|{)\s*"(.*?)"\s*:\s*{//;
   $ver = $1 if s/(?:^|,)\s*"version"\s*:\s*"(.*?)"//;
@@ -49,6 +49,7 @@ while (<JSON>) {
 close JSON;
 %updateCenter or die "No data from update-center.json";
 
+### TODO: refactor so github plugins don't need 3 entries (knownRevs,skipEntry,tagMap)
 ### Check plugins hosted in subversion
 # 1. Get list of all svn tags, split into plugin name and version
 open(LS, "$svn ls " . join(" ", values %tags) . " |") or die;
@@ -99,8 +100,8 @@ foreach my $key (keys %updateCenter) {
   next if ($x = delete $knownRevs{"$key-unreleased"}) eq 'skip';
   ($p,$ver) = &updateCenterData($key,$key);
   $x = &gitRevs($x,$ver) if (!$x and ($x = delete $knownRevs{"$key-github"}));
-  $x = 'Found in update-center.json, not in svn' unless $x;
-  print "| $p | | $ver | | | $x\n";
+  $x = "| $ver | | | Found in update-center.json, not in svn" unless $x;
+  print "| $p | $x\n";
 }
 foreach my $key (keys %knownRevs) {
   next if $prefix and $key !~ /^$prefix/;
@@ -216,9 +217,9 @@ sub gitRevs {
       }
     }
   }
-  $title = $count == 0 ? 'CURRENT' : "[$count rev" . ($count > 1 ? 's' : '')
-         . "|https://github.com/hudson/$repo/commits/master/] after release $rev";
-  $title .= ' (_Version mismatch' . ($count > 0 ? '' : ": github has ${rev}") . '_)'
+  $title = $count == 0 ? "| $ver | | | CURRENT" : "[$count rev" . ($count > 1 ? 's' : '')
+         . "|https://github.com/hudson/$repo/commits/master/] | since $rev | |";
+  $title .= ' (_Version mismatch: ' . ($count > 0 ? "json has $ver" : "github has $rev") . '_)'
     if $rev ne $ver;
   return $title;
 }
