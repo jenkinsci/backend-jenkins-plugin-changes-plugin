@@ -1,4 +1,4 @@
-# Perl script to generate report of unreleased plugin changes in Hudson's subversion repository.
+# Perl script to generate report of unreleased plugin changes in Hudson's plugin repositories.
 # @author Alan Harder (mindless@dev.java.net)
 # %knownRevs, %skipTag, %skipEntry, %tagMap, %jsonMap will be prepended before script is run.
 #
@@ -21,7 +21,7 @@
 #   Map to ID used in update-center.json when it doesn't match pluginDir.
 use XML::Parser;
 
-my $base = 'https://svn.dev.java.net/svn/hudson';
+my $base = 'https://svn.java.net/svn/hudson~svn';
 my %tags = ("" => "$base/tags",
             "global-build-stats" => "$base/tags/global-build-stats",  # 2 plugins use subdir
             "scm-sync-configuration" => "$base/tags/scm-sync-configuration");
@@ -34,13 +34,6 @@ my $prefix = $ARGV[0];
 my $svn = 'svn --non-interactive';
 my $today = &today_val;
 my ($ver, $tagrev, $cnt, $d1, $d2, $known, $since, $p, $x, %x, %updateCenter);
-
-# Get list of all svn tags, split into plugin name and version
-open(LS, "$svn ls " . join(" ", values %tags) . " |") or die;
-while (<LS>) {
-  push(@{$x{$1}}, $2) if m!^(.*)-([\d._]+)/?$! and not exists $skipTag{"$1-$2"};
-}
-close LS;
 
 # Read Update Center data
 open(JSON,"$svn cat $base/trunk/www2/update-center.json |") or die;
@@ -56,7 +49,15 @@ while (<JSON>) {
 close JSON;
 %updateCenter or die "No data from update-center.json";
 
-# Get "Last Changed Rev" of latest version of each plugin, then get more recent revs in trunk
+### Check plugins hosted in subversion
+# 1. Get list of all svn tags, split into plugin name and version
+open(LS, "$svn ls " . join(" ", values %tags) . " |") or die;
+while (<LS>) {
+  push(@{$x{$1}}, $2) if m!^(.*)-([\d._]+)/?$! and not exists $skipTag{"$1-$2"};
+}
+close LS;
+
+# 2. Get "Last Changed Rev" of latest version of each plugin, then get more recent revs in trunk
 foreach $x (sort bydir keys %x) {
   next if ($p = exists $tagMap{$x} ? $tagMap{$x} : $x) eq 'skip';
   next if $prefix and $p !~ /^$prefix/;
@@ -75,7 +76,8 @@ foreach $x (sort bydir keys %x) {
   }
 }
 
-# List unreleased plugins
+# 3. List unreleased plugins
+# TODO: Use http://github.com/api/v2/json/repos/show/hudson to find unreleased plugins in github
 open(LS,"$svn ls $base/trunk/hudson/plugins |") or die;
 while (<LS>) {
   chomp; ($p = $_) =~ s!/$!!;
@@ -91,7 +93,7 @@ while (<LS>) {
 }
 close LS;
 
-# List update center data not reported so far
+# 4. List update center data not reported so far AND check github hosted plugins
 foreach my $key (keys %updateCenter) {
   next if $prefix and $key !~ /^$prefix/;
   next if ($x = delete $knownRevs{"$key-unreleased"}) eq 'skip';
@@ -104,6 +106,8 @@ foreach my $key (keys %knownRevs) {
   next if $prefix and $key !~ /^$prefix/;
   print "| Unused data in KnownRevs: | | | | $key | $knownRevs{$key}\n";
 }
+
+### Helper methods
 
 sub bydir {
   my ($x,$y) = (exists $tagMap{$a} ? $tagMap{$a} : $a, exists $tagMap{$b} ? $tagMap{$b} : $b);
