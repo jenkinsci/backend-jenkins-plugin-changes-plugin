@@ -194,19 +194,19 @@ sub colorize {
 
 sub gitRevs {
   my ($repo, $ver, $doc, $i, $j) = ($_[0], $_[1], XML::Parser->new(Style=>'Tree'));
-  open(XML, "curl -s https://github.com/hudson/$repo/commits/master.atom |") or die;
+  open(XML, "curl -s http://github.com/api/v2/xml/commits/list/hudson/$repo/master |") or die;
   my ($xml, $done, $count, $rev, $list, $entry, $title) = ($doc->parse(*XML), 0, 0);
   close XML;
 
   $list = $xml->[1];
   parse: for ($i = 0; $i < $#$list; $i++) {
-    if ($list->[$i] eq 'entry') {
+    if ($list->[$i] eq 'commit') {
       $entry = $list->[++$i];
       for ($j = 0; $j < $#$entry; $j++) {
-        if ($entry->[$j] eq 'title') {
+        if ($entry->[$j] eq 'message') {
           $title = $entry->[++$j]->[2];
-          if ($done) {
-            $rev = $1 if $title =~ /prepare release.*-([\d._]+)\s*$/;
+          if ($done and $title =~ /prepare release (?:[\w-]+-)?([\d._]+)\s*$/) {
+            $rev = $1
             last parse;
           } elsif ($title =~ /prepare for next dev/) {
             $done = 1;
@@ -217,8 +217,9 @@ sub gitRevs {
       }
     }
   }
+  $rev = '?' unless $rev; # TODO: could add ?page=2 to commits URL to look further..
   $title = $count == 0 ? "| $ver | | | CURRENT" : "[$count rev" . ($count > 1 ? 's' : '')
-         . "|https://github.com/hudson/$repo/commits/master/] | since $rev | |";
+         . "|https://github.com/hudson/$repo/commits/master/] | since $rev | | |";
   $title .= ' (_Version mismatch: ' . ($count > 0 ? "json has $ver" : "github has $rev") . '_)'
     if $rev ne $ver;
   return $title;
