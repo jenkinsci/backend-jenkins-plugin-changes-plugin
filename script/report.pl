@@ -206,7 +206,7 @@ sub gitRevs {
         if ($entry->[$j] eq 'message') {
           $title = $entry->[++$j]->[2];
           if ($done and $title =~ /prepare release (?:[\w-]+-)?([\d._]+)\s*$/) {
-            $rev = $1
+            $rev = $1;
             last parse;
           } elsif ($title =~ /prepare for next dev/) {
             $done = 1;
