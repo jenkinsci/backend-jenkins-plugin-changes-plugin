@@ -25,7 +25,7 @@ my $base = 'https://svn.java.net/svn/hudson~svn';
 my %tags = ("" => "$base/tags",
             "global-build-stats" => "$base/tags/global-build-stats",  # 2 plugins use subdir
             "scm-sync-configuration" => "$base/tags/scm-sync-configuration");
-my @revsUrl = ('http://fisheye.hudson-ci.org/search/hudson/trunk/hudson/plugins/',
+my @revsUrl = ('http://fisheye.hudson-labs.org/search/hudson/trunk/hudson/plugins/',
                '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                '%20where%20date%20%3E=%20',
                '%20group%20by%20changeset%20return%20csid,%20comment,%20author,%20path');
