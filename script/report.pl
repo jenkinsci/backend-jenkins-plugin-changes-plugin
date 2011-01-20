@@ -218,8 +218,10 @@ sub gitRevs {
     }
   }
   $rev = '?' unless $rev; # TODO: could add ?page=2 to commits URL to look further..
+  $title = delete $knownRevs{"$repo-$rev-$count"};
   $title = $count == 0 ? "| $ver | | | CURRENT" : "[$count rev" . ($count > 1 ? 's' : '')
-         . "|https://github.com/hudson/$repo/commits/master/] | since $rev | | |";
+         . "|https://github.com/hudson/$repo/commits/master/] | since $rev | | |"
+    unless $title;
   $title .= ' (_Version mismatch: ' . ($count > 0 ? "json has $ver" : "github has $rev") . '_)'
     if $rev ne $ver;
   return $title;
