@@ -3,9 +3,10 @@
 # %knownRevs, %skipTag, %skipEntry, %tagMap, %jsonMap will be prepended before script is run.
 #
 # %knownRevs = Map<pluginDir-rev-revcount,message> or <pluginDir-unreleased,message>
-#                                                  or <pluginId-github,githubRepo>
+#               or githubDir-ver-revcount,message> or <pluginId-github,githubRepo>
 #   If plugin "pluginDir" was last released at revision "rev" and there have been "revcount"
 #   revisions since then, show the given message in the report instead of the usual message.
+#   (or for github, if there have been "revcount" revs since version "ver" of "githubDir")
 #   Or pluginDir-unreleased to show given message for an unreleased plugin.
 #   Or pluginId-github to specify a plugin is hosted at github.com with given repository name.
 #
