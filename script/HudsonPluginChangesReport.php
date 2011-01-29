@@ -22,7 +22,7 @@ $repoMap = readFromStdin();
 # For plugins that migrate to github but have not yet run a release there.
 $reallyGithub = readFromStdin();
 #
-$prefix = $argv[1];
+$prefix = isset($argv[1]) ? $argv[1] : '';
 $issueUrl = 'http://issues.hudson-ci.org/browse';
 $svn = 'svn --non-interactive';
 $javanetBase = 'https://svn.java.net/svn/hudson~svn';
@@ -68,7 +68,6 @@ foreach ($xmlIndex['NAME'] as $i) {
 $data = array();
 foreach ($updateCenter->plugins as $id => $p) {
   if ($prefix and !preg_match("/^$prefix/i", $id)) continue;
-if (strncmp($id,'bulk',4)===0) var_dump($id,$reallyGithub[$id],$reallyGithub);
   $isGithub = strcasecmp(substr($p->scm, -10), 'github.com') === 0
            || isset($reallyGithub[$id]);
   $repoName = isset($repoMap[$id]) ? $repoMap[$id] : ($isGithub ? "$id-plugin" : $id);
