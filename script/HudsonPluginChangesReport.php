@@ -222,7 +222,7 @@ function javanetSvn($pluginId, $repoName, $pluginJson) {
     if (isset($xmlIndex['MSG'])) {
       foreach ($xmlIndex['MSG'] as $i) {
         $revs[] = array(substr($xmlData[$i-2/*DATE*/]['value'], 0, 10),
-                        $xmlData[$i/*MSG*/]['value']);
+                        isset($xmlData[$i/*MSG*/]['value']) ? $xmlData[$i]['value'] : '');
       }
     } else {
       $key = "$pluginId-$ver-0";
