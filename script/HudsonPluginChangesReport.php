@@ -68,7 +68,7 @@ foreach ($xmlIndex['NAME'] as $i) {
 $data = array();
 foreach ($updateCenter->plugins as $id => $p) {
   if ($prefix and !preg_match("/^$prefix/i", $id)) continue;
-  $isGithub = strcasecmp(substr($p->scm, -10), 'github.com') === 0
+  $isGithub = strcasecmp(substr(isset($p->scm) ? $p->scm : '', -10), 'github.com') === 0
            || isset($reallyGithub[$id]);
   $repoName = isset($repoMap[$id]) ? $repoMap[$id] : ($isGithub ? "$id-plugin" : $id);
   if ($repoName==='skip') continue;
@@ -97,7 +97,7 @@ foreach ($plugins as $p) {
   if ($prefix and !preg_match("/^$prefix/i", $p)) continue;
   if (substr($p, -1) == '/') {
     $p = substr($p, 0, -1);
-    if ($repoMap[$p] === 'skip') continue;
+    if (isset($repoMap[$p]) and $repoMap[$p] === 'skip') continue;
     if (!isset($seenJavanetDirs[$p])) {
       # TODO: get #revs and date range..
       $comment = knownRevs($p . '-unreleased');
@@ -116,7 +116,7 @@ for ($p = 1; TRUE; $p++) {
   if (count($githubRepos->repositories) == 0) break;
   foreach ($githubRepos->repositories as $repo) {
     if ($prefix and !preg_match("/^$prefix/i", $repo->name)) continue;
-    if ($repoMap[$repo->name] === 'skip') continue;
+    if (isset($repoMap[$repo->name]) and $repoMap[$repo->name] === 'skip') continue;
     if (!isset($seenGithubRepos[$repo->name])) {
       # TODO: get #revs and date range..
       $comment = knownRevs($repo->name . '-unreleased');
@@ -154,8 +154,10 @@ print "\nGenerated at: " . `date` . ' in ' . floor($time/60) . ' min ' . ($time%
 
 function knownRevs($key) {
   global $knownRevs;
-  $result = $knownRevs[$key];
-  unset($knownRevs[$key]);
+  if (isset($knownRevs[$key])) {
+    $result = $knownRevs[$key];
+    unset($knownRevs[$key]);
+  }
   return $result;
 }
 
@@ -268,7 +270,7 @@ function processRevs($revs, $pluginId, $pluginJson, $ver, $url) {
     $result .= ' (_Version mismatch: json has ' . $pluginJson->version . '_)';
 
   $since = $cnt ? "[$cnt rev" . ($cnt > 1 ? 's' :'') . "|$url] | since" : '|';
-  $p = $pluginJson->wiki ? "[$pluginId|$pluginJson->wiki]" : $pluginId;
+  $p = !empty($pluginJson->wiki) ? "[$pluginId|$pluginJson->wiki]" : $pluginId;
   $today = today();
   $d = $firstDate ? ($firstDate==$date ? colorize($date, $today)
      : colorize($firstDate, $today) . ' to ' . colorize($date, $today)) : '';
