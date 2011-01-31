@@ -45,7 +45,7 @@ $seenGithubRepos = $seenJavanetDirs = $svnTagMap = array();
 $updateCenter = json_decode(
         trim(file_get_contents('http://updates.hudson-labs.org/update-center.json'),
              "updateCnr.os(); \t\n\r"));
-if (!$updateCenter) die('** No data from update-center.json');
+if (!$updateCenter) mydie('** No data from update-center.json');
 
 # 2. Load all tags from java.net svn
 $xml = xml_parser_create();
@@ -53,7 +53,7 @@ $svnTagDirs = implode(' ', $svnTagDirs);
 xml_parse_into_struct($xml,
     `$svn ls --xml $svnTagDirs`, $xmlData, $xmlIndex);
 xml_parser_free($xml);
-if (!$xmlData) die('** Failed to get tags from java.net svn');
+if (!$xmlData) mydie('** Failed to get tags from java.net svn');
 foreach ($xmlIndex['NAME'] as $i) {
   $tag = $xmlData[$i]['value'];
   $rev = $xmlData[$i+2]['attributes']['REVISION'];
@@ -61,7 +61,7 @@ foreach ($xmlIndex['NAME'] as $i) {
   $p = ($i = strrpos($tag, '-')) === FALSE ? $tag : substr($tag, 0, $i);
   $v = $i === FALSE ? '' : substr($tag, $i + 1);
   # Build map of id->(version#,rev#), keeping latest rev# for each plugin
-  if ($rev > $svnTagMap[$p][1]) $svnTagMap[$p] = array($v, $rev);
+  if (!isset($svnTagMap[$p]) or $rev > $svnTagMap[$p][1]) $svnTagMap[$p] = array($v, $rev);
 }
 
 # 3. Process all released plugins
@@ -92,7 +92,7 @@ foreach ($repoMap as $key => $value) if ($value=='skip') $repoMap["$key-plugin"]
 # 4. Get list of all directories under hudson/plugins in java.net svn
 #    and report any unreleased plugins
 exec("$svn ls $javanetBase/trunk/hudson/plugins", $plugins);
-if (!$plugins) die('** Failed to get plugin list from java.net svn');
+if (!$plugins) mydie('** Failed to get plugin list from java.net svn');
 foreach ($plugins as $p) {
   if ($prefix and !preg_match("/^$prefix/i", $p)) continue;
   if (substr($p, -1) == '/') {
@@ -112,7 +112,7 @@ foreach ($plugins as $p) {
 for ($p = 1; TRUE; $p++) {
   $githubRepos = json_decode(
         file_get_contents('http://github.com/api/v2/json/repos/show/hudson?page=' . $p));
-  if (!$githubRepos) die('** Failed to get repo list from github');
+  if (!$githubRepos) mydie('** Failed to get repo list from github');
   if (count($githubRepos->repositories) == 0) break;
   foreach ($githubRepos->repositories as $repo) {
     if ($prefix and !preg_match("/^$prefix/i", $repo->name)) continue;
@@ -170,7 +170,7 @@ function github($pluginId, $repoName) {
   foreach (explode("\nFrom ", file_get_contents("$url.patch")) as $rev) {
     if (!preg_match(
           '|^Date: \w{3}, (\d+ \w+ \d+).*?\nSubject: \[PATCH[ \d/]*\]\s*(.*?)$|m', $rev, $match)) {
-      die("** Failed to parse for $pluginId: $rev");
+      mydie("** Failed to parse github revision for $pluginId: $rev");
     }
     $revs[] = array(dateFormat($match[1]), $match[2]);
   }
@@ -185,7 +185,7 @@ function maxTag($pluginId, $json) {
       $vers[$match[1]] = $hash;
     else fwrite(STDERR, "** Skipped github tag: $pluginId - $id\n");
   }
-  uksort($vers, version_compare);
+  uksort($vers, 'version_compare');
   return each(array_reverse($vers));
 }
 
@@ -290,7 +290,7 @@ function colorize($date, $today) {
   $a = round(ageMonths($date,$today)/2);
   if ($a <= 0) return $date;
   if ($a > 5) $a = 5;
-  $colors = array($_[0], '3', '6', '9', 'c', 'f');
+  $colors = array(0, '3', '6', '9', 'c', 'f');
   return '{color:#' . $colors[$a] . (9 - $a) . '6}' . $date . '{color}';
 }
 
@@ -309,4 +309,8 @@ function readFromStdin() {
   return $result;
 }
 
+function mydie($msg) {
+  fwrite(STDERR, "$msg\n");
+  exit(1);
+}
 ?>
