@@ -157,7 +157,7 @@ function knownRevs($key) {
   if (isset($knownRevs[$key])) {
     $result = $knownRevs[$key];
     unset($knownRevs[$key]);
-  }
+  } else $result = FALSE;
   return $result;
 }
 
