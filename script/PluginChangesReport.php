@@ -1,5 +1,5 @@
 <?php
-# Script to generate report of unreleased plugin changes in Hudson's plugin repositories.
+# Script to generate report of unreleased plugin changes in Jenkins' plugin repositories.
 # @author Alan Harder (mindless@dev.java.net)
 $time = time();
 #
@@ -23,14 +23,14 @@ $repoMap = readFromStdin();
 $reallyGithub = readFromStdin();
 #
 $prefix = isset($argv[1]) ? $argv[1] : '';
-$issueUrl = 'http://issues.hudson-ci.org/browse';
+$issueUrl = 'http://issues.jenkins-ci.org/browse';
 $svn = 'svn --non-interactive';
 $javanetBase = 'https://svn.java.net/svn/hudson~svn';
 # Where to find all svn tags (a couple plugins use a subdir of /tags)
 $svnTagDirs = array("$javanetBase/tags",
                     "$javanetBase/tags/global-build-stats",
                     "$javanetBase/tags/scm-sync-configuration");
-$fisheyeBase = 'http://fisheye.hudson-labs.org';
+$fisheyeBase = 'http://fisheye.jenkins-ci.org';
 $fisheyeUrl = array("$fisheyeBase/search/hudson/trunk/hudson/plugins/",
                     '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                     '%20where%20date%20%3E=%20',
@@ -43,7 +43,7 @@ $seenGithubRepos = $seenJavanetDirs = $svnTagMap = array();
 
 # 1. Load update-center.json
 $updateCenter = json_decode(
-        trim(file_get_contents('http://updates.hudson-labs.org/update-center.json'),
+        trim(file_get_contents('http://updates.jenkins-ci.org/update-center.json'),
              "updateCnr.os(); \t\n\r"));
 if (!$updateCenter) mydie('** No data from update-center.json');
 
@@ -107,11 +107,11 @@ foreach ($plugins as $p) {
     }
   }
 }
-# 5. Get list of all git repositories under github.com/hudson
+# 5. Get list of all git repositories under github.com/jenkinsci
 #    and report any unreleased plugins
 for ($p = 1; TRUE; $p++) {
   $githubRepos = json_decode(
-        file_get_contents('http://github.com/api/v2/json/repos/show/hudson?page=' . $p));
+        file_get_contents('http://github.com/api/v2/json/repos/show/jenkinsci?page=' . $p));
   if (!$githubRepos) mydie('** Failed to get repo list from github');
   if (count($githubRepos->repositories) == 0) break;
   foreach ($githubRepos->repositories as $repo) {
@@ -121,14 +121,14 @@ for ($p = 1; TRUE; $p++) {
       # TODO: get #revs and date range..
       $comment = knownRevs($repo->name . '-unreleased');
       if (!$comment) $comment = 'unreleased';
-      $data[] = "| [$repo->name|http://github.com/hudson/$repo->name] | | | $comment\n";
+      $data[] = "| [$repo->name|http://github.com/jenkinsci/$repo->name] | | | $comment\n";
     }
   }
 }
 
 # 6. Group and print results
 usort($data, function($a,$b){return strcasecmp(ltrim($a,'| ['),ltrim($b,'| ['));});
-print "This is a report of unreleased changes in Hudson's plugin repositories.\n"
+print "This is a report of unreleased changes in Jenkins' plugin repositories.\n"
     . "It is updated once per week.\n\nh3. Plugin Changes\n";
 foreach ($data as $line) {
   if (strpos($line, 'CURRENT') === FALSE and strpos($line, 'unreleased') === FALSE) print $line;
@@ -164,10 +164,10 @@ function knownRevs($key) {
 function github($pluginId, $repoName) {
   # Get all tags in this repo, sort by version# and get highest
   list ($ver, $hash) = maxTag($pluginId, json_decode(
-    file_get_contents("http://github.com/api/v2/json/repos/show/hudson/$repoName/tags")));
+    file_get_contents("http://github.com/api/v2/json/repos/show/jenkinsci/$repoName/tags")));
   $revs = array();
   # URL to compare last release tag and master branch
-  $url = "https://github.com/hudson/$repoName/compare/$hash...master";
+  $url = "https://github.com/jenkinsci/$repoName/compare/$hash...master";
   # Fetch ".patch" version of this URL and split into revisions
   foreach (explode("\nFrom ", file_get_contents("$url.patch")) as $rev) {
     if (!preg_match(

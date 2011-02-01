@@ -5,10 +5,10 @@ import sys
 from xmlrpclib import Server
 
 content = sys.stdin.read()
-s = Server("http://wiki.hudson-ci.org/rpc/xmlrpc")
-token = s.confluence1.login("hudson",
+s = Server("http://wiki.jenkins-ci.org/rpc/xmlrpc")
+token = s.confluence1.login("jenkins",
   open(os.environ['SECRET_DIR']+'/pwfile', 'r').readline().rstrip())
-page = s.confluence1.getPage(token, "hudson", "Unreleased Plugin Changes")
+page = s.confluence1.getPage(token, "jenkins", "Unreleased Plugin Changes")
 page["content"] = content
 s.confluence1.storePage(token, page)
 
