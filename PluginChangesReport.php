@@ -31,7 +31,7 @@ $svnTagDirs = array("$svnBase/tags",
                     "$svnBase/tags/global-build-stats",
                     "$svnBase/tags/scm-sync-configuration");
 $fisheyeBase = 'http://fisheye.jenkins-ci.org';
-$fisheyeUrl = array("$fisheyeBase/search/hudson/trunk/hudson/plugins/",
+$fisheyeUrl = array("$fisheyeBase/search/Jenkins/trunk/hudson/plugins/",
                     '?ql=select%20revisions%20from%20dir%20/trunk/hudson/plugins/',
                     '%20where%20date%20%3E=%20',
                     '%20group%20by%20changeset%20return%20csid,%20comment,%20author,%20path');
@@ -102,7 +102,7 @@ foreach ($plugins as $p) {
       # TODO: get #revs and date range..
       $comment = knownRevs($p . '-unreleased');
       if (!$comment) $comment = 'unreleased';
-      $data[] = "| [$p|$fisheyeBase/browse/Hudson/trunk/hudson/plugins/$p] | | | $comment\n";
+      $data[] = "| [$p|$fisheyeBase/browse/Jenkins/trunk/hudson/plugins/$p] | | | $comment\n";
       $seenGithubRepos["$p-plugin"] = 1; # Don't also report github mirror as unreleased
     }
   }
