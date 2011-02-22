@@ -145,7 +145,7 @@ foreach ($data as $line) {
 # 7. Report any unused $knownRevs entries
 foreach ($knownRevs as $key => $value) {
   if ($prefix and !preg_match("/^$prefix/i", $key)) continue;
-  $data[] = "| Unused data in KnownRevs: | | | | $key | $value\n";
+  print "| Unused data | in | KnownRevs: | $key | $value\n";
 }
 $time = time() - $time;
 print "\nGenerated at: " . `date` . ' in ' . floor($time/60) . ' min ' . ($time%60) . " sec.\n";
