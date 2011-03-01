@@ -192,7 +192,7 @@ function github($pluginId, $repoName) {
 function maxTag($pluginId, $repoName, $json) {
   global $parentPomMap;
   $vers = array();
-  foreach ($json->tags as $tag) {
+  foreach ($json->tags as $tag => $hash) {
     if (preg_match("/^(?:$pluginId" . '-?)?([0-9._]+)$/', $tag, $match)) {
       $vers[$match[1]] = $tag;
       continue;
