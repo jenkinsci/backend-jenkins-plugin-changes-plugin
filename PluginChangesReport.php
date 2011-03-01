@@ -18,6 +18,16 @@ $knownRevs = readFromStdin();
 # Default for repo is $id-plugin for github and $id for svn.
 $repoMap = readFromStdin();
 #
+# $parentPomMap of $id => tagBase | [pluginSubDir or VER_OK]
+# Assists in finding latest version of a plugin when the tags are not
+# simple "pluginId-version" due to use of a parent pom.
+# Maps pluginId to the base name used for tags and how to find the release
+# version; the latter can be "VER_OK" which means the version in the tag
+# matches the release version; if the parent pom has different version
+# numbers than the plugin release, specify the subdirectory in the source
+# where the plugin resides and the version will be looked up in the pom.
+$parentPomMap = readFromStdin();
+#
 # $reallyGithub of $id=>1
 # For plugins that migrate to github but have not yet run a release there.
 $reallyGithub = readFromStdin();
@@ -163,11 +173,11 @@ function knownRevs($key) {
 
 function github($pluginId, $repoName) {
   # Get all tags in this repo, sort by version# and get highest
-  list ($ver, $hash) = maxTag($pluginId, json_decode(
+  list ($ver, $tag) = maxTag($pluginId, $repoName, json_decode(
     file_get_contents("http://github.com/api/v2/json/repos/show/jenkinsci/$repoName/tags")));
   $revs = array();
   # URL to compare last release tag and master branch
-  $url = "https://github.com/jenkinsci/$repoName/compare/$hash...master";
+  $url = "https://github.com/jenkinsci/$repoName/compare/$tag...master";
   # Fetch ".patch" version of this URL and split into revisions
   foreach (explode("\nFrom ", file_get_contents("$url.patch")) as $rev) {
     if (!preg_match(
@@ -179,16 +189,42 @@ function github($pluginId, $repoName) {
   return array($ver, $revs, $url);
 }
 
-function maxTag($pluginId, $json) {
-  $pidLen = strlen($pluginId);
+function maxTag($pluginId, $repoName, $json) {
+  global $parentPomMap;
   $vers = array();
-  foreach ($json->tags as $id => $hash) {
-    if (preg_match("/^(?:$pluginId" . '-?)?([0-9._]+)$/', $id, $match))
-      $vers[$match[1]] = $hash;
-    else fwrite(STDERR, "** Skipped github tag: $pluginId - $id\n");
+  foreach ($json->tags as $tag) {
+    if (preg_match("/^(?:$pluginId" . '-?)?([0-9._]+)$/', $tag, $match)) {
+      $vers[$match[1]] = $tag;
+      continue;
+    } else if (isset($parentPomMap[$pluginId])) {
+      $entry = explode('|', $parentPomMap[$pluginId]);
+      if (preg_match('/^(?:' . $entry[0] . '-?)?([0-9._]+)$/', $tag, $match)) {
+        $ver = lookupVersion($entry[1], $match[1], $repoName, $tag);
+        if (isset($ver)) {
+          $vers[$ver] = $tag;
+          continue;
+        }
+      }
+    }
+    fwrite(STDERR, "** Skipped github tag: $pluginId - $tag\n");
   }
   uksort($vers, 'version_compare');
   return each(array_reverse($vers));
+}
+
+function lookupVersion($pluginSubDir, $tagVersion, $repoName, $tag) {
+  if ($pluginSubDir == 'VER_OK') return $tagVersion;
+  $xml = xml_parser_create();
+  xml_parse_into_struct($xml,
+      file_get_contents("https://github.com/jenkinsci/$repoName/raw/$tag/$pluginSubDir/pom.xml"),
+      $xmlData, $xmlIndex);
+  xml_parser_free($xml);
+  foreach ($xmlIndex['VERSION'] as $i) {
+    if ($xmlData[$i]['level'] === 2) {
+      return $xmlData[$i]['value'];
+    }
+  }
+  return NULL;
 }
 
 function dateFormat($date) {
