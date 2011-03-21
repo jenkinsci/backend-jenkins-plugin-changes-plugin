@@ -179,12 +179,19 @@ function github($pluginId, $repoName) {
   # URL to compare last release tag and master branch
   $url = "https://github.com/jenkinsci/$repoName/compare/$tag...master";
   # Fetch ".patch" version of this URL and split into revisions
-  foreach (explode("\nFrom ", file_get_contents("$url.patch")) as $rev) {
-    if (!preg_match(
-          '|^Date: \w{3}, (\d+ \w+ \d+).*?\nSubject: \[PATCH[ \d/]*\]\s*(.*?)$|m', $rev, $match)) {
-      mydie("** Failed to parse github revision for $pluginId: $rev");
+  if ($patch = trim(file_get_contents("$url.patch"))) {
+    foreach (explode("\nFrom ", $patch) as $rev) {
+      if (!preg_match('|^Date: \w{3}, (\d+ \w+ \d+).*?\nSubject: \[PATCH[ \d/]*\]\s*(.*?)$|m',
+                      $rev, $match)) {
+        mydie("** Failed to parse github revision for $pluginId $ver: $rev");
+      }
+      $revs[] = array(dateFormat($match[1]), $match[2]);
     }
-    $revs[] = array(dateFormat($match[1]), $match[2]);
+  } else {
+    global $knownRevs;
+    $key = "$pluginId-$ver-0";
+    if (!isset($knownRevs[$key])) $knownRevs[$key] = '?'; # Don't show "CURRENT"
+    fwrite(STDERR, "** Unable to find revisions for github $repoName from tag $tag\n");
   }
   return array($ver, $revs, $url);
 }
