@@ -80,7 +80,9 @@ foreach ($updateCenter->plugins as $id => $p) {
   if ($prefix and !preg_match("/^$prefix/i", $id)) continue;
   $isGithub = strcasecmp(substr(isset($p->scm) ? $p->scm : '', -10), 'github.com') === 0
            || isset($reallyGithub[$id]);
-  $repoName = isset($repoMap[$id]) ? $repoMap[$id] : ($isGithub ? "$id-plugin" : $id);
+  # By default $id matches dir name in svn, and "$id-plugin" is repo name in github:
+  $repoName = isset($repoMap[$id]) ? $repoMap[$id]
+            : ($isGithub && substr($id, -7) != '-plugin' ? "$id-plugin" : $id);
   if ($repoName==='skip') continue;
   # Check either github or svn for revisions since the latest release.
   if ($isGithub) {
