@@ -286,7 +286,7 @@ function processRevs($revs, $pluginId, $pluginJson, $ver, $url) {
   foreach ($revs as $rev) {
     list ($date, $comment) = $rev;
     # Skip these commits from [maven-release]
-    if (strpos($comment, 'prepare for next development iteration') !== FALSE
+    if (strpos($comment, 'prepare for next development'/* iteration */) !== FALSE
         or strncmp($comment, 'bumping up POM version', 22) === 0) {
       continue;
     }
