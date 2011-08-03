@@ -181,7 +181,7 @@ function github($pluginId, $repoName) {
   # URL to compare last release tag and master branch
   $url = "https://github.com/jenkinsci/$repoName/compare/$tag...master";
   # Fetch ".patch" version of this URL and split into revisions
-  if ($patch = trim(file_get_contents("$url.patch"))) {
+  if ($tag and $patch = trim(file_get_contents("$url.patch"))) {
     foreach (explode("\nFrom ", $patch) as $rev) {
       if (!preg_match('|^Date: \w{3}, (\d+ \w+ \d+).*?\nSubject: \[PATCH[ \d/]*\]\s*(.*?)$|m',
                       $rev, $match)) {
