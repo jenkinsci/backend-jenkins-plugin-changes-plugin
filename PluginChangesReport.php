@@ -174,12 +174,14 @@ function knownRevs($key) {
 }
 
 function github($pluginId, $repoName) {
+  # Prepend github account "jenkinsci" if another account not specified
+  if (strpos($repoName, '/') === FALSE) $repoName = "jenkinsci/$repoName";
   # Get all tags in this repo, sort by version# and get highest
   list ($ver, $tag) = maxTag($pluginId, $repoName, json_decode(
-    file_get_contents("http://github.com/api/v2/json/repos/show/jenkinsci/$repoName/tags")));
+    file_get_contents("https://github.com/api/v2/json/repos/show/$repoName/tags")));
   $revs = array();
   # URL to compare last release tag and master branch
-  $url = "https://github.com/jenkinsci/$repoName/compare/$tag...master";
+  $url = "https://github.com/$repoName/compare/$tag...master";
   # Fetch ".patch" version of this URL and split into revisions
   if ($tag and $patch = trim(file_get_contents("$url.patch"))) {
     foreach (explode("\nFrom ", $patch) as $rev) {
@@ -225,7 +227,7 @@ function lookupVersion($pluginSubDir, $tagVersion, $repoName, $tag) {
   if ($pluginSubDir == 'VER_OK') return $tagVersion;
   $xml = xml_parser_create();
   xml_parse_into_struct($xml,
-      file_get_contents("https://github.com/jenkinsci/$repoName/raw/$tag/$pluginSubDir/pom.xml"),
+      file_get_contents("https://github.com/$repoName/raw/$tag/$pluginSubDir/pom.xml"),
       $xmlData, $xmlIndex);
   xml_parser_free($xml);
   foreach ($xmlIndex['VERSION'] as $i) {
