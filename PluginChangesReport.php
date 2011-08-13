@@ -1,6 +1,6 @@
 <?php
 # Script to generate report of unreleased plugin changes in Jenkins' plugin repositories.
-# @author Alan Harder (mindless@dev.java.net)
+# @author Alan Harder
 $time = time();
 #
 # $knownRevs of $id-$ver-$cnt => text
@@ -298,7 +298,7 @@ function processRevs($revs, $pluginId, $pluginJson, $ver, $url) {
           '/^(integrated )?community[- ]contributed (localization|translation)/i', $comment)) {
       $l10n++;
     }
-    for ($i = 0; preg_match('/FIXED ([A-Z]+-(\d+))/i',
+    for ($i = 0; preg_match('/FIX[EDS]* ([A-Z]+-(\d+))/i',
                             $comment, $match, PREG_OFFSET_CAPTURE, $i);) {
       $fixed[] = '[' . $match[2][0] . "|$issueUrl/" . $match[1][0] . ']';
       $i = $match[2][1] + strlen($match[2][0]);
