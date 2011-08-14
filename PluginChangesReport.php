@@ -53,7 +53,7 @@ $seenGithubRepos = $seenJavanetDirs = $svnTagMap = array();
 
 # 1. Load update-center.json
 $updateCenter = json_decode(
-        trim(file_get_contents('http://updates.jenkins-ci.org/update-center.json'),
+        trim(get_url('http://updates.jenkins-ci.org/update-center.json'),
              "updateCnr.os(); \t\n\r"));
 if (!$updateCenter) mydie('** No data from update-center.json');
 
@@ -123,7 +123,7 @@ foreach ($plugins as $p) {
 #    and report any unreleased plugins
 for ($p = 1; TRUE; $p++) {
   $githubRepos = json_decode(
-        file_get_contents('http://github.com/api/v2/json/repos/show/jenkinsci?page=' . $p));
+        get_url('http://github.com/api/v2/json/repos/show/jenkinsci?page=' . $p));
   if (!$githubRepos) mydie('** Failed to get repo list from github');
   if (count($githubRepos->repositories) == 0) break;
   foreach ($githubRepos->repositories as $repo) {
@@ -178,12 +178,12 @@ function github($pluginId, $repoName) {
   if (strpos($repoName, '/') === FALSE) $repoName = "jenkinsci/$repoName";
   # Get all tags in this repo, sort by version# and get highest
   list ($ver, $tag) = maxTag($pluginId, $repoName, json_decode(
-    file_get_contents("https://github.com/api/v2/json/repos/show/$repoName/tags")));
+    get_url("https://github.com/api/v2/json/repos/show/$repoName/tags")));
   $revs = array();
   # URL to compare last release tag and master branch
   $url = "https://github.com/$repoName/compare/$tag...master";
   # Fetch ".patch" version of this URL and split into revisions
-  if ($tag and $patch = trim(file_get_contents("$url.patch"))) {
+  if ($tag and $patch = trim(get_url("$url.patch"))) {
     foreach (explode("\nFrom ", $patch) as $rev) {
       if (!preg_match('|^Date: \w{3}, (\d+ \w+ \d+).*?\nSubject: \[PATCH[ \d/]*\]\s*(.*?)$|m',
                       $rev, $match)) {
@@ -201,6 +201,7 @@ function github($pluginId, $repoName) {
 }
 
 function maxTag($pluginId, $repoName, $json) {
+  if (!$json) return array('', '');
   global $parentPomMap;
   $vers = array();
   foreach ($json->tags as $tag => $hash) {
@@ -227,7 +228,7 @@ function lookupVersion($pluginSubDir, $tagVersion, $repoName, $tag) {
   if ($pluginSubDir == 'VER_OK') return $tagVersion;
   $xml = xml_parser_create();
   xml_parse_into_struct($xml,
-      file_get_contents("https://github.com/$repoName/raw/$tag/$pluginSubDir/pom.xml"),
+      get_url("https://github.com/$repoName/raw/$tag/$pluginSubDir/pom.xml"),
       $xmlData, $xmlIndex);
   xml_parser_free($xml);
   foreach ($xmlIndex['VERSION'] as $i) {
@@ -236,6 +237,16 @@ function lookupVersion($pluginSubDir, $tagVersion, $repoName, $tag) {
     }
   }
   return NULL;
+}
+
+function get_url($url) {
+  if (($s = file_get_contents($url)) === FALSE) {
+    # Retry once
+    sleep(3);
+    fwrite(STDERR, "** Retry $url\n");
+    $s = file_get_contents($url);
+  }
+  return $s ? $s : '';
 }
 
 function dateFormat($date) {
