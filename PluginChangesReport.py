@@ -240,7 +240,7 @@ def maxTag(pluginId, repoName, json):
       continue
     elif pluginId in tagMap:
       entry = tagMap[pluginId].split('|')
-      if len(entry) < 3: entry[2] = ''
+      if len(entry) < 3: entry.append('')
       match = re.match('^(?:%s-?)?([0-9._]+%s)$' % (entry[0], entry[2]), tag)
       if match:
         ver = lookupVersion(entry[1], match.group(1), repoName, tag)
