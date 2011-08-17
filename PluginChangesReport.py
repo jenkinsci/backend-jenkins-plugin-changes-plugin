@@ -29,7 +29,7 @@ knownRevs = {}
 # Default for repo is $id-plugin for github and $id for svn.
 repoMap = {}
 
-# $tagMap of $id => tagBase | [pluginSubDir or VER_OK]
+# $tagMap of $id => tagBase | [pluginSubDir or VER_OK] [ | suffix ]
 # Assists in finding latest version of a plugin when the tags are not
 # simple "pluginId-version" due to non-standard tags or use of a parent pom.
 # Maps pluginId to the base name used for tags and how to find the release
@@ -37,6 +37,7 @@ repoMap = {}
 # matches the release version; if the parent pom has different version
 # numbers than the plugin release, specify the subdirectory in the source
 # where the plugin resides and the version will be looked up in the pom.
+# Optionally add |suffix to specify a regex to allow after the version#.
 tagMap = {}
 
 # $reallyGithub of $id=>1
@@ -239,7 +240,8 @@ def maxTag(pluginId, repoName, json):
       continue
     elif pluginId in tagMap:
       entry = tagMap[pluginId].split('|')
-      match = re.match('^(?:%s-?)?([0-9._]+)$' % entry[0], tag)
+      if len(entry) < 3: entry[2] = ''
+      match = re.match('^(?:%s-?)?([0-9._]+%s)$' % (entry[0], entry[2]), tag)
       if match:
         ver = lookupVersion(entry[1], match.group(1), repoName, tag)
         if ver:
