@@ -181,12 +181,14 @@ def readFromStdin():
 def getUrl(url):
   try:
     return urlopen(url)
-  except IOError:
+  except IOError as e:
     # Retry once
     sleep(3)
-    print >> sys.stderr, '** Retry', url
+    print >> sys.stderr, '**', e, '\n** Retry', url
     try: return urlopen(url)
-    except IOError: return False
+    except IOError as e:
+      print >> sys.stderr, '**', e
+      return False
 
 def getJson(url):
   s = getUrl(url)
