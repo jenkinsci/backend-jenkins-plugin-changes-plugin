@@ -158,7 +158,7 @@ def main():
   # 7. Report any unused $knownRevs entries
   for (key, value) in knownRevs.items():
     if not key.startswith(prefix): continue
-    print '| Unused data | in | KnownRevs: | %s | %s\n' % (key, value);
+    print '| Unused data | in | KnownRevs: | %s | %s' % (key, value);
 
   duration = int(time() - start_time)
   print('\nGenerated at: %s in %d min %d sec\n'
