@@ -180,6 +180,7 @@ def readFromStdin():
   return result
 
 def getUrl(url):
+  sleep(3)  # Don't hit github too fast
   try:
     return urlopen(url)
   except IOError as e:
