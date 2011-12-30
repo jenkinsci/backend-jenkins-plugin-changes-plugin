@@ -86,7 +86,8 @@ def main():
   seenJavanetDirs = {}
   for (id, p) in updateCenter['plugins'].items():
     if not id.startswith(prefix): continue
-    isGithub = (p['scm'][-10:].lower() == 'github.com'
+    if 'scm' not in p: print >> sys.stderr, '** Missing scm info for', id
+    isGithub = ('scm' in p and p['scm'][-10:].lower() == 'github.com'
                 or id in reallyGithub)
     # By default $id matches dir name in svn, and "$id-plugin" is repo name in github:
     repoName = (repoMap[id] if id in repoMap
