@@ -209,10 +209,10 @@ def github(pluginId, repoName):
   if '/' not in repoName: repoName = 'jenkinsci/' + repoName
   # Get all tags in this repo, sort by version# and get highest
   (ver, tag) = maxTag(pluginId, repoName, getJson(
-        'https://api.github.com/repos/jenkinsci/%s/tags' % repoName))
+        'https://api.github.com/repos/%s/tags' % repoName))
   revs = []
   # URL to compare last release tag and master branch
-  url = 'https://api.github.com/repos/jenkinsci/%s/%s...master' % (repoName, tag)
+  url = 'https://api.github.com/repos/%s/%s...master' % (repoName, tag)
   # Fetch ".patch" version of this URL and split into revisions
   patch = getUrl(url + '.patch') if tag else None
   if patch: patch = patch.read().strip()
