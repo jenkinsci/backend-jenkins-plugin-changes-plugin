@@ -130,7 +130,7 @@ def main():
   page = 1
   while True:
     githubRepos = json.load(
-        urlopen('http://github.com/api/v2/json/repos/show/jenkinsci?page=%d' % page))
+        urlopen('https://api.github.com/orgs/jenkinsci/repos?page=%&per_page=100' % page))
     if len(githubRepos['repositories']) == 0: break
     for repoName in [ repo['name'] for repo in githubRepos['repositories'] ]:
       if not repoName.startswith(prefix): continue
@@ -209,10 +209,10 @@ def github(pluginId, repoName):
   if '/' not in repoName: repoName = 'jenkinsci/' + repoName
   # Get all tags in this repo, sort by version# and get highest
   (ver, tag) = maxTag(pluginId, repoName, getJson(
-        'https://github.com/api/v2/json/repos/show/%s/tags' % repoName))
+        'https://api.github.com/repos/jenkinsci/%s/tags' % repoName))
   revs = []
   # URL to compare last release tag and master branch
-  url = 'https://github.com/%s/compare/%s...master' % (repoName, tag)
+  url = 'https://api.github.com/repos/jenkinsci/%s/%s...master' % (repoName, tag)
   # Fetch ".patch" version of this URL and split into revisions
   patch = getUrl(url + '.patch') if tag else None
   if patch: patch = patch.read().strip()
