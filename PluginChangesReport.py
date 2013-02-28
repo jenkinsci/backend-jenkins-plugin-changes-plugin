@@ -9,6 +9,7 @@ import re
 from StringIO import StringIO
 import sys
 from time import localtime, sleep, time
+from datetime import datetime
 from urllib2 import urlopen
 from xml.etree import ElementTree
 
@@ -130,9 +131,9 @@ def main():
   page = 1
   while True:
     githubRepos = json.load(
-        urlopen('http://github.com/api/v2/json/repos/show/jenkinsci?page=%d' % page))
-    if len(githubRepos['repositories']) == 0: break
-    for repoName in [ repo['name'] for repo in githubRepos['repositories'] ]:
+        urlopen('https://api.github.com/orgs/jenkinsci/repos?page=%s&per_page=100' % page))
+    if len(githubRepos) == 0: break
+    for repoName in [ repo['name'] for repo in githubRepos ]:
       if not repoName.startswith(prefix): continue
       if repoName in repoMap and repoMap[repoName] == 'skip': continue
       if repoName not in seenGithubRepos:
@@ -209,36 +210,31 @@ def github(pluginId, repoName):
   if '/' not in repoName: repoName = 'jenkinsci/' + repoName
   # Get all tags in this repo, sort by version# and get highest
   (ver, tag) = maxTag(pluginId, repoName, getJson(
-        'https://github.com/api/v2/json/repos/show/%s/tags' % repoName))
-  revs = []
+        'https://api.github.com/repos/%s/tags' % repoName))
+  revs = getRevs(repoName, tag)
   # URL to compare last release tag and master branch
-  url = 'https://github.com/%s/compare/%s...master' % (repoName, tag)
-  # Fetch ".patch" version of this URL and split into revisions
-  patch = getUrl(url + '.patch') if tag else None
-  if patch: patch = patch.read().strip()
-  if patch:
-    rx = re.compile(
-        '^Date: \w{3}, (\d+ \w+ \d+).*?\nSubject: \[PATCH[ \d/]*\]\s*(.*?)$', re.MULTILINE)
-    for rev in patch.split('\nFrom '):
-      match = rx.search(rev)
-      if not match:
-        quit('** Failed to parse github revision for %s %s: %s' % (pluginId, ver, rev))
-      revs.append( (dateFormat(match.group(1)), match.group(2)) )
-  else:
-    key = '%s-%s-0' % (pluginId, ver)
-    if key not in knownRevs: knownRevs[key] = '?'  # Don't show "CURRENT"
-    print >> sys.stderr, (
-        '** Unable to find revisions for github %s from tag %s' % (repoName, tag))
+  url = 'https://github.com/%s/compare/%s...master' % (repoName, tag['name'])
   return (ver, revs, url)
+
+def getRevs(repoName, tag):
+  commits = getJson('https://api.github.com/repos/%s/commits' % repoName)
+  revs = []
+  if not commits: return revs
+  for commit in commits:
+    revs.append( (dateFormat2(commit['commit']['author']['date']), commit['commit']['message']) )
+    if commit['sha'] == tag['commit']['sha']:
+      break
+  return revs;
 
 def maxTag(pluginId, repoName, json):
   if not json: return ('', '')
   vers = {}
   rx = re.compile('^(?:%s-?)?([0-9._]+)$' % pluginId)
-  for (tag, hash) in json['tags'].items():
+  for tagentry in json:
+    tag = tagentry['name']
     match = rx.match(tag)
     if match:
-      vers[match.group(1)] = tag
+      vers[match.group(1)] = tagentry
       continue
     elif pluginId in tagMap:
       entry = tagMap[pluginId].split('|')
@@ -247,7 +243,7 @@ def maxTag(pluginId, repoName, json):
       if match:
         ver = lookupVersion(entry[1], match.group(1), repoName, tag)
         if ver:
-          vers[ver] = tag
+          vers[ver] = tagentry
           continue
     print >> sys.stderr, '** Skipped github tag: %s - %s' % (pluginId, tag)
   if not vers: return ('', '')
@@ -266,6 +262,10 @@ def dateFormat(date):
   match = re.match('^(\d+) (\w+) (\d+)$', date)
   return ('%s-%02d-%02d' % (match.group(3), monthMap[match.group(2)], int(match.group(1)))
           if match else date)
+
+def dateFormat2(date):
+  dt=datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ')
+  return dt.strftime('%Y-%m-%d')
 
 def jenkinsSvn(pluginId, repoName, pluginJson):
   # URL for changes since last release
