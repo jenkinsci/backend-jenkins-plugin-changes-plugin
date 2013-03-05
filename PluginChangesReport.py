@@ -148,19 +148,24 @@ def main():
   data = sorted(data, key=lambda s: s.lstrip('| [').lower())
   print('This is a report of unreleased changes in Jenkins\' plugin repositories.\n'
         'It is updated once per week.\n\nh3. Plugin Changes')
+  print('\n|| Plugin || Unreleased commits || Last commit || Date || Fixes pending release ||')
   for line in data:
     if not 'CURRENT' in line and not 'unreleased' in line: print line
   print '\nh3. Unreleased Plugins'
+  print('\n|| Plugin || ? || ? || Note ||')
   for line in data:
     if 'unreleased' in line: print line
   print '\nh3. Current Plugins'
+  print('\n|| Plugin || Unreleased commits || Last commit || Date || Note ||')
   for line in data:
     if 'CURRENT' in line: print line
 
   # 7. Report any unused $knownRevs entries
+  print '\nh3. Unused Data'
+  print('\n|| Commit || Note ||')
   for (key, value) in knownRevs.items():
     if not key.startswith(prefix): continue
-    print '| Unused data | in | KnownRevs: | %s | %s' % (key, value);
+    print '| %s | %s' % (key, value);
 
   duration = int(time() - start_time)
   print('\nGenerated at: %s in %d min %d sec\n'
