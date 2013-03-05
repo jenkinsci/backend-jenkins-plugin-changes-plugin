@@ -211,9 +211,14 @@ def github(pluginId, repoName):
   # Get all tags in this repo, sort by version# and get highest
   (ver, tag) = maxTag(pluginId, repoName, getJson(
         'https://api.github.com/repos/%s/tags' % repoName))
-  revs = getRevs(repoName, tag)
-  # URL to compare last release tag and master branch
-  url = 'https://github.com/%s/compare/%s...master' % (repoName, tag['name'])
+  if tag != '':
+    revs = getRevs(repoName, tag)
+    # URL to compare last release tag and master branch
+    url = 'https://github.com/%s/compare/%s...master' % (repoName, tag['name'])
+  else:
+    revs = []
+    url = ''
+    
   return (ver, revs, url)
 
 def getRevs(repoName, tag):
@@ -274,7 +279,8 @@ def jenkinsSvn(pluginId, repoName, pluginJson):
   revs = []
   # Get rev# when tag for last release was created
   (ver, tagRev) = (svnTagMap[pluginId] if pluginId in svnTagMap else
-      (svnTagMap[repoName] if repoName in svnTagMap else svnTagMap[pluginId + '-plugin']))
+      (svnTagMap[repoName] if repoName in svnTagMap else 
+      (svnTagMap[pluginId + '-plugin'] if (pluginId + '-plugin') in svnTagMap else (False, False))))
   if not tagRev:
     ver = '?'
     key = '%s-%s-0' % (pluginId, ver)
