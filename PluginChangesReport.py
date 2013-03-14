@@ -131,8 +131,7 @@ def main():
   #    and report any unreleased plugins
     page = 1
     while True:
-        githubRepos = json.load(
-            urlopen('https://api.github.com/orgs/jenkinsci/repos?page=%s&per_page=100' % page))
+        githubRepos = getJson('https://api.github.com/orgs/jenkinsci/repos?page=%d&per_page=100' % page)
         if len(githubRepos) == 0: break
         for repoName in [ repo['name'] for repo in githubRepos ]:
             if not repoName.startswith(prefix): continue
