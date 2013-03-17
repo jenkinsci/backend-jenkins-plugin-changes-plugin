@@ -10,10 +10,13 @@ from StringIO import StringIO
 import sys
 from time import localtime, sleep, time
 from datetime import datetime
-from urllib2 import urlopen
+from urllib2 import urlopen, Request
 from xml.etree import ElementTree
 
 start_time = time()
+
+urlSleepTime = 0.05
+urlRetrySleepTime = 3.5
 
 # $knownRevs of $id-$ver-$cnt => text
 # To display a message in the report regarding the state of a plugin.
@@ -60,6 +63,8 @@ fisheyeUrl = [ fisheyeBase + '/search/Jenkins/trunk/hudson/plugins/',
 monthMap = { 'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
              'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12 }
 svnTagMap = {}
+
+token = False
 
 def main():
     """The main function"""
@@ -131,7 +136,7 @@ def main():
   #    and report any unreleased plugins
     page = 1
     while True:
-        githubRepos = getJson('https://api.github.com/orgs/jenkinsci/repos?page=%d&per_page=100' % page)
+        githubRepos = getGitJson('https://api.github.com/orgs/jenkinsci/repos?page=%d&per_page=100' % page)
         if len(githubRepos) == 0: break
         for repoName in [ repo['name'] for repo in githubRepos ]:
             if not repoName.startswith(prefix): continue
@@ -187,13 +192,17 @@ def readFromStdin():
     return result
 
 def getUrl(url):
-    sleep(3)  # Don't hit github too fast
+    sleep(urlSleepTime)  # Don't hit github too fast
     try:
         return urlopen(url)
     except IOError as e:
         # Retry once
-        sleep(3)
-        print >> sys.stderr, '**', e, '\n** Retry', url
+        sleep(urlRetrySleepTime)
+        print >> sys.stderr, '**', e
+        if isinstance(url, Request):
+            print >> sys.stderr, '** Retry', url.get_full_url()
+        else:
+            print >> sys.stderr, '** Retry', url
         try: return urlopen(url)
         except IOError as e:
             print >> sys.stderr, '**', e
@@ -202,6 +211,18 @@ def getUrl(url):
 def getJson(url):
     s = getUrl(url)
     return json.load(s) if s else False
+
+def getGitJson(url):
+    request = Request(url);
+    if token:
+        request.add_header('Authorization', "token "+token)
+    return getJson(request)
+
+def gitUrlopen(url):
+    request = Request(url);
+    if token:
+        request.add_header('Authorization', "token "+token)
+    return urlopen(request)
 
 def getKnownRevs(key):
     if key in knownRevs:
@@ -214,7 +235,7 @@ def github(pluginId, repoName):
     # Prepend github account "jenkinsci" if another account not specified
     if '/' not in repoName: repoName = 'jenkinsci/' + repoName
     # Get all tags in this repo, sort by version# and get highest
-    (ver, tag) = maxTag(pluginId, repoName, getJson(
+    (ver, tag) = maxTag(pluginId, repoName, getGitJson(
         'https://api.github.com/repos/%s/tags' % repoName))
     if tag != '':
         revs = getRevs(repoName, tag)
@@ -227,7 +248,7 @@ def github(pluginId, repoName):
     return (ver, revs, url)
 
 def getRevs(repoName, tag):
-    commits = getJson('https://api.github.com/repos/%s/commits' % repoName)
+    commits = getGitJson('https://api.github.com/repos/%s/commits' % repoName)
     revs = []
     if not commits: return revs
     for commit in commits:
@@ -264,7 +285,7 @@ def maxTag(pluginId, repoName, json):
 def lookupVersion(pluginSubDir, tagVersion, repoName, tag):
     if pluginSubDir == 'VER_OK': return tagVersion
     xml = ElementTree.XML(
-        urlopen('https://github.com/%s/raw/%s/%s/pom.xml'
+        gitUrlopen('https://github.com/%s/raw/%s/%s/pom.xml'
                 % (repoName, tag, pluginSubDir)).read())
   # Need to account for xmlns in find:
     return xml.find('{%s}version' % xml.tag[1:xml.tag.index('}')]).text
@@ -365,6 +386,18 @@ def colorize(date, today):
     if a > 5: a = 5
     colors = [ 0, '3', '6', '9', 'c', 'f' ]
     return '{color:#%s%d6}%s{color}' % (colors[a], 9 - a, date)
+
+def testRate():
+    jsonText = getGitJson('https://api.github.com/rate_limit')
+    print jsonText
+
+try:
+    tokenFile = open(os.environ['SECRET_DIR']+'/GithubToken', 'r') 
+    token = tokenFile.readline().rstrip()
+except IOError as e:
+        print >> sys.stderr, '**', e, '\n'
+except LookupError as e:
+        print >> sys.stderr, '** missing ', e, '\n'
 
 knownRevs = readFromStdin()
 repoMap = readFromStdin()
