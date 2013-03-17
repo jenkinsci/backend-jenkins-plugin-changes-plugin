@@ -15,6 +15,9 @@ from xml.etree import ElementTree
 
 start_time = time()
 
+urlSleepTime = 0.05
+urlRetrySleepTime = 3.5
+
 # $knownRevs of $id-$ver-$cnt => text
 # To display a message in the report regarding the state of a plugin.
 # Usually to show a message like "~CURRENT -- pom,test" if a plugin's
@@ -189,12 +192,12 @@ def readFromStdin():
     return result
 
 def getUrl(url):
-    sleep(3)  # Don't hit github too fast
+    sleep(urlSleepTime)  # Don't hit github too fast
     try:
         return urlopen(url)
     except IOError as e:
         # Retry once
-        sleep(3)
+        sleep(urlRetrySleepTime)
         print >> sys.stderr, '**', e
         if isinstance(url, Request):
             print >> sys.stderr, '** Retry', url.get_full_url()
