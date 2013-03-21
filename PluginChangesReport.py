@@ -17,6 +17,7 @@ start_time = time()
 
 urlSleepTime = 0.05
 urlRetrySleepTime = 3.5
+gitHubDelay = 60
 
 # $knownRevs of $id-$ver-$cnt => text
 # To display a message in the report regarding the state of a plugin.
@@ -192,7 +193,7 @@ def readFromStdin():
     return result
 
 def getUrl(url):
-    sleep(urlSleepTime)  # Don't hit github too fast
+    sleep(urlSleepTime)  # Don't hit servers too fast
     try:
         return urlopen(url)
     except IOError as e:
@@ -216,12 +217,16 @@ def getGitJson(url):
     request = Request(url);
     if token:
         request.add_header('Authorization', "token "+token)
+    else:
+        sleep(gitHubDelay)
     return getJson(request)
 
 def gitUrlopen(url):
     request = Request(url);
     if token:
         request.add_header('Authorization', "token "+token)
+    else:
+        sleep(gitHubDelay)
     return urlopen(request)
 
 def getKnownRevs(key):
