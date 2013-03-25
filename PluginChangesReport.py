@@ -152,6 +152,9 @@ def main():
 
   # 6. Group and print results
     data = sorted(data, key=lambda s: s.lstrip('| [').lower())
+    print('{warning:title=\'Automatically Generated Content\'}\n'
+        'This page is automatically generated, any edits you make will be lost!\n'
+        '{warning}\n')
     print('This is a report of unreleased changes in Jenkins\' plugin repositories.\n'
         'It is updated once per week.\n\nh3. Plugin Changes')
     print('\n|| Plugin || Unreleased commits || Last commit || Date || Fixes pending release ||')
