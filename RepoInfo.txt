@@ -1,0 +1,258 @@
+# $knownRevs of $id-$ver-$cnt => text
+# To display a message in the report regarding the state of a plugin.
+# Usually to show a message like "~CURRENT -- pom,test" if a plugin's
+# changes since the last release don't actually change anything in a
+# release (such as pom changes or unit tests).
+# For plugin $id with $cnt revs since version $ver, show given message.
+blame-upstream-commiters-1.2-1  | CURRENT -- cleanup
+ccm-2.6.1-1                     | CURRENT -- pom,gitignore
+changelog-history-1.3-1         | CURRENT -- pom
+chucknorris-0.4-6               | ~CURRENT -- jenkinify,pom
+copy-data-to-workspace-plugin-1.0-0 | CURRENT  # tag renamed after "prepare for next.."
+deploy-websphere-1.0-0          | CURRENT  # nonstandard release, no "prepare for next.."
+easyant-1.1-1                   | CURRENT -- svn-prop
+grinder-1.4-1                   | CURRENT -- svn-prop
+hudsontrayapp-0.7.3-0           | CURRENT  # release problems, "prepare for next.." before tag
+javancss-1.1-1                  | ~CURRENT -- l10n
+label-verifier-1.0-1            | ~CURRENT -- pom
+m2-repo-reaper-1.0-2            | CURRENT -- svn-prop
+matrixtieparent-1.1-2           | ~CURRENT -- svn-prop,minor-refactor
+nodejs-0.1-4                    | ~CURRENT -- pom
+nunit-0.14-1                    | CURRENT -- test
+perfpublisher-7.97-1            | ~CURRENT -- pom
+pxe-1.5-1                       | ~CURRENT -- jdk7-compilable
+secret-1.6-2                    | ~CURRENT -- pom
+sicci_for_xcode-0.0.8-1         | CURRENT -- cleanup
+starteam-0.6.7-2                | ~CURRENT -- pom
+timestamper-1.2.2-2             | CURRENT -- readme
+toolenv-1.0-2                   | ~CURRENT -- pom
+twitter-0.6-1                   | CURRENT -- test
+unicorn-0.1.1-1                 | CURRENT -- gitignore
+webtestpresenter-0.23-1         | CURRENT -- pom
+xvnc-1.10-1                     | CURRENT -- pom
+
+----
+# $repoMap of $id => repo
+# To handle cases where artifactId from POM doesn't map directly
+# to github repo name or directory name in svn. Set to 'skip' to skip item.
+# Default for repo is $id-plugin for github and $id for svn.
+#
+build-pipeline-plugin        | skip  # External SCM (https://jira.centrumsystems.com.au/svn/BPHP) not accessible
+caliper-ci                   | skip  # External SCM (caliper-ci.googlecode.com)
+prereq-buildstep             | skip  # External SCM (http://bitbucket.org/henriklynggaard/prereq-buildstep-plugin)
+project-health-report        | skip  # External SCM (http://bitbucket.org/henriklynggaard/project-health-report-plugin)
+#
+AdaptivePlugin               | magnayn/Jenkins-AdaptivePlugin
+clearcase-thales             | cittools/clearcase-plugin
+clearcase-ucm-plugin         | Praqma/ClearCaseUCMPlugin
+klocwork                     | cittools/klocwork-plugin
+monkit-plugin                | Praqma/MonKit-Plugin
+PUCM                         | Praqma/pucm
+repository                   | magnayn/Jenkins-Repository
+show-build-parameters        | petehayes/show-build-parameters-plugin
+simpleclearcase              | sata/simpleclearcase-plugin  # fork under jenkinsci not used
+#
+AnchorChain                  | anchor-chain-plugin
+anything-goes-formatter      | jenkinsci/anything-goes-formatter
+appdynamics-dashboard        | appdynamics-plugin
+backup-interrupt-plugin      | backup-jobs-plugin
+BlazeMeterJenkinsPlugin      | blazemeter-plugin
+blitz_io-jenkins             | blitz_io-plugin
+cloudbees-plugin-gateway     | jenkinsci/cloudbees-plugin-gateway
+cocoapods-integration        | ThoughtsOnMobile/cocoapods-jenkins-integration
+ColumnPack-plugin            | hanabishi/ColumnPack
+ColumnsPlugin                | skip    # renamed to ColumnPack-plugin
+cucumber                     | masterthought/jenkins-cucumber-jvm-reports-plugin
+custom-tools-plugin          | customtools-plugin
+devstack                     | echohead/jenkins-devstack-plugin
+dynamicparameter             | Seitenbau/sb-jenkins-dynamicparameter
+exclusive-label-plugin       | exclusive-labels-plugin
+externalresource-dispatcher  | external-resource-dispatcher-plugin
+groovy-remote                | groovy-remote-control-plugin
+heroku-jenkins-plugin        | heroku/heroku-jenkins-plugin
+hp-operations-orchestration-automation-execution-plugin | hp-operations-orchestration-plugin
+http_request                 | http-request-plugin
+PrioritySorter               | priority-sorter-plugin
+ikachan                      | kentaro/jenkins-ikachan-plugin
+jbpm-embedded-plugin         | skip    # renamed to jbpm-workflow-plugin
+jclouds-jenkins              | jclouds-plugin
+jenkins-flowdock-plugin      | flowdock/jenkins-flowdock-plugin
+jenkins-jira-issue-updater   | jira-issue-updater-plugin
+jenkins-leiningen            | skip    # renamed to leiningen-plugin
+jenkins-multijob-plugin      | tikal-multijob-plugin
+jenkins-tag-cloud-plugin     | tag-cloud-plugin 
+jenkins-testswarm-plugin     | testswarm-plugin
+jenkins-tracker              | bitium/jenkins_tracker
+jenkinswalldisplay-pom       | skip    # renamed to jenkinswalldisplay
+jenkow-activiti-designer     | skip  # part of jenkow-plugin
+jenkow-activiti-explorer     | skip  # part of jenkow-plugin
+jslint                       | jslint-jenkins-plugin
+nexus-task-runner            | Quramy/nexus-task-runner
+nodeofflinenotification      | node-offline-notification-plugin
+nopmdcheck                   | Quramy/nopmdcheck
+nopmdverifytrac              | Quramy/nopmdverifytrac
+pending-changes              | pendingchanges-plugin
+perl                         | melezhik/perl-plugin
+rbenv                        | hsbt/jenkins-rbenv-plugin
+rubymotion                   | Watson1978/jenkins-rubymotion-plugin
+scripted-cloud-plugin        | hisatti77/scripted-cloud-plugin
+selenium-builder             | rossrowe/selenium-builder-plugin
+simple-parameterized-builds-report | nullin/simple-parameterized-builds-report
+sladiator-notifier           | sladiator-plugin
+sonatype-ci                  | sonatype/sonatype-ci-for-jenkins
+suite-test-groups-publisher  | vimil/suite-test-groups-publisher
+svn-workspace-cleaner        | davidparsson/svn-workspace-cleaner-plugin
+terminate-ssh-processes-plugin | sshProcess-check-plugin
+thinBackup                   | thin-backup-plugin
+TwilioNotifier               | twilio-notifier-plugin
+url-auth                     | kellyelton/url-auth-jenkins
+#
+built-on-column              | builton-column-plugin
+ClearCase-UCM-Plugin         | clearcase-ucm-plugin
+clone-workspace-scm          | jenkins-clone-workspace-scm-plugin
+dependencyanalyzer           | dependency-analyzer
+excludeMatrixParent          | exclude-matrix-parent
+gerrit                       | Hudson-Gerrit-Plugin
+hudson-logaction-plugin      | logaction
+hudson-pview-plugin          | pview
+hudson-wsclean-plugin        | wsclean
+integrity                    | skip  # Also released as integrity-plugin
+jenkinswalldisplay           | walldisplay-plugin
+keepSlaveOffline             | keep-slave-offline
+LavaLampNotifier             | lavalamp
+mailcommander                | mail-commander-plugin
+notifo                       | hudson-notifo-plugin
+play-autotest-plugin         | play-plugin
+preSCMbuildstep              | pre-scm-buildstep-plugin
+#PrioritySorter               | Hudson-Priority-Sorter-Plugin
+radiatorviewplugin           | radiatorview
+rubyMetrics                  | rubymetrics-plugin
+Schmant                      | schmant
+seleniumhtmlreport           | seleniumhtmlreport
+shelve-project-plugin        | shelve-project-plugin-plugin
+sicci_for_xcode              | sicci-for-xcode-plugin
+signal-killer                | signal-killer
+skype-notifier               | skype-im-plugin
+SSSCM                        | shell-script-scm-plugin
+startup-trigger-plugin       | startup-trigger-plugin-plugin
+synergy                      | synergy_scm-plugin
+testng-plugin                | testng-plugin-plugin
+throttle-concurrents         | throttle-concurrent-builds-plugin
+
+analysis-config              | skip    # just a dependency, not a plugin
+analysis-pom                 | skip    # just a parent pom, not a plugin
+analysis-suite               | skip    # just a parent pom, not a plugin
+analysis-test                | skip    # just for testing, not a plugin
+assembla-jenkins             | skip    # renamed to assembla
+backend-confluence-spam-remover | skip # not a plugin
+backend-crawler              | skip    # not a plugin
+backend-crowd-javanet-directory | skip # not a plugin
+backend-github-repository-list | skip  # not a plugin
+backend-ircbot               | skip    # not a plugin
+backend-jenkins-ci.org-webcontents | skip # not a plugin
+backend-jenkins-plugin-changes-plugin | skip # this report! not a plugin
+backend-jenkins-plugin-info-plugin | skip # not a plugin
+backend-l10n-applier         | skip    # not a plugin
+backend-l10n-server          | skip    # not a plugin
+backend-list-pending-pull-requests | skip  # not a plugin
+backend-plugin2rpm           | skip    # not a plugin
+backend-release.rss          | skip    # not a plugin
+backend-update-center        | skip    # not a plugin
+backend-update-center2       | skip    # not a plugin
+backend-verify-issuetracker-component | skip # not a plugin
+cifs                         | skip    # plugin is deprecated
+clearcase-plugin             | skip    # mirror of svn, plugin uses different github repo
+copyarchiver                 | skip    # plugin is deprecated
+core-js                      | skip    # not a plugin
+cppunit                      | skip    # plugin is deprecated
+dom4j                        | skip    # not a plugin
+drools                       | skip    # plugin is deprecated
+extras-android               | skip    # not a plugin
+extras-client-demo           | skip    # not a plugin
+extras-ec2-launcher          | skip    # not a plugin
+extras-executable-war        | skip    # not a plugin
+extras-file-change-monitor   | skip    # not a plugin
+extras-jenkins-magic         | skip    # not a plugin
+extras-jenkins-tools         | skip    # not a plugin
+extras-jenkins-wiki-plugin   | skip    # not a plugin
+extras-jinterop-wmi          | skip    # not a plugin
+extras-maven2.1-interceptor  | skip    # not a plugin
+extras-memory-monitor        | skip    # not a plugin
+extras-nofinal-test          | skip    # not a plugin
+extras-nofinal               | skip    # not a plugin
+extras-tester                | skip    # not a plugin
+git-plugin                   | skip    # mirror of svn, plugin uses different github repo
+google-desktop-gadget        | skip    # gadget, not a plugin
+hello-world                  | skip    # sample plugins, not for release
+hello-world-groovy           | skip
+htmlunit                     | skip    # not a plugin
+infra-puppet                 | skip    # not a plugin
+infra-rating                 | skip    # not a plugin
+instant-messaging-parent     | skip    # just a parent pom, not a plugin
+jelly                        | skip    # not a plugin
+jenkins                      | skip    # jenkins itself, not a plugin
+jexl                         | skip    # not a plugin
+jmdns                        | skip    # not a plugin
+json-lib                     | skip    # not a plugin
+lib-annotation-indexer       | skip    # not a plugin
+lib-confluence-api           | skip    # not a plugin
+lib-crypto-util              | skip    # not a plugin
+lib-embedded-rhino-debugger  | skip    # not a plugin
+lib-jenkins-maven-artifact-manager | skip  # not a plugin
+lib-jenkins-maven-embedder   | skip    # not a plugin
+lib-jira-api                 | skip    # not a plugin
+lib-onepass-blob-tree        | skip    # not a plugin
+lib-task-reactor             | skip    # not a plugin
+lib-test-annotations         | skip    # not a plugin
+lib-windows-remote-command   | skip    # not a plugin
+maven-hudson-dev-plugin      | skip    # maven plugin, not hudson plugin
+maven-hpi-plugin             | skip    # maven plugin, not hudson plugin
+maven-plugin                 | skip    # released weekly with core
+netx                         | skip    # not a plugin
+pom                          | skip    # not a plugin
+pucm-plugin                  | skip    # fork under jenkinsci not used
+remoting                     | skip    # not a plugin
+sandbox                      | skip    # not a plugin
+scis-ad                      | skip    # plugin is deprecated
+script-realm-extended        | skip    # plugin is deprecated
+security-no-captcha          | skip    # plugin is deprecated
+serenitec                    | skip    # no longer published; see perfpublisher
+setenv                       | skip    # plugin is deprecated
+svnkit                       | skip    # not a plugin
+testbed-ant-sample           | skip    # not a plugin
+testbed-anttest-sample       | skip    # not a plugin
+trilead-ssh2                 | skip    # not a plugin
+ui-samples-plugin            | skip    # released weekly with core
+winstone                     | skip    # not a plugin
+xstream                      | skip    # not a plugin
+
+----
+# $tagMap of $id => tagBase | [pluginSubDir or VER_OK] [ | suffix ]
+# Assists in finding latest version of a plugin when the tags are not
+# simple "pluginId-version" due to non-standard tags or use of a parent pom.
+# Maps pluginId to the base name used for tags and how to find the release
+# version; the latter can be "VER_OK" which means the version in the tag
+# matches the release version; if the parent pom has different version
+# numbers than the plugin release, specify the subdirectory in the source
+# where the plugin resides and the version will be looked up in the pom.
+# Optionally add |suffix to specify a regex to allow after the version#.
+gerrit-trigger               | gerrit-trigger-parent|gerrithudsontrigger
+github-oauth                 | release|VER_OK
+jenkinswalldisplay           | jenkinswalldisplay-pom|VER_OK
+jython                       | jython-plugin|VER_OK
+liverebel-deploy             | liverebel-deploy|VER_OK|-M\d+
+mailcommander                | mc|VER_OK
+swarm                        | swarm-plugin|VER_OK
+virtualbox                   | virtualbox-parent|VER_OK
+
+----
+# $reallyGithub of $id
+# For plugins that migrate to github but have not yet run a release there.
+chucknorris
+downstream-ext
+locks-and-latches
+nodejs
+piwikanalytics
+reviewboard
+rvm
+virtualbox
