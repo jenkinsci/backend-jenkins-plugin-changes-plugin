@@ -5,31 +5,23 @@
 # release (such as pom changes or unit tests).
 # For plugin $id with $cnt revs since version $ver, show given message.
 blame-upstream-commiters-1.2-1  | CURRENT -- cleanup
-ccm-2.6.1-1                     | CURRENT -- pom,gitignore
-changelog-history-1.3-1         | CURRENT -- pom
 chucknorris-0.4-6               | ~CURRENT -- jenkinify,pom
-copy-data-to-workspace-plugin-1.0-0 | CURRENT  # tag renamed after "prepare for next.."
-deploy-websphere-1.0-0          | CURRENT  # nonstandard release, no "prepare for next.."
-easyant-1.1-1                   | CURRENT -- svn-prop
-grinder-1.4-1                   | CURRENT -- svn-prop
-hudsontrayapp-0.7.3-0           | CURRENT  # release problems, "prepare for next.." before tag
-javancss-1.1-1                  | ~CURRENT -- l10n
-label-verifier-1.0-1            | ~CURRENT -- pom
-m2-repo-reaper-1.0-2            | CURRENT -- svn-prop
-matrixtieparent-1.1-2           | ~CURRENT -- svn-prop,minor-refactor
-nodejs-0.1-4                    | ~CURRENT -- pom
-nunit-0.14-1                    | CURRENT -- test
+copy-data-to-workspace-plugin-1.0-1 | ~CURRENT -- pom
+deploy-websphere-1.0-1          | CURRENT -- pom
+grinder-1.4-3                   | CURRENT -- pom
+hudsontrayapp-0.7.3-2           | CURRENT -- pom
+label-verifier-1.0-3            | ~CURRENT -- pom
+m2-repo-reaper-1.0-4            | CURRENT -- pom
+matrixtieparent-1.2-1           | ~CURRENT -- pom
 perfpublisher-7.97-1            | ~CURRENT -- pom
-pxe-1.5-1                       | ~CURRENT -- jdk7-compilable
-secret-1.6-2                    | ~CURRENT -- pom
-sicci_for_xcode-0.0.8-1         | CURRENT -- cleanup
-starteam-0.6.7-2                | ~CURRENT -- pom
-timestamper-1.2.2-2             | CURRENT -- readme
-toolenv-1.0-2                   | ~CURRENT -- pom
-twitter-0.6-1                   | CURRENT -- test
-unicorn-0.1.1-1                 | CURRENT -- gitignore
-webtestpresenter-0.23-1         | CURRENT -- pom
-xvnc-1.10-1                     | CURRENT -- pom
+sms-1.1-1                       | ~CURRENT -- pom
+starteam-0.6.11-1               | ~CURRENT -- pom
+timestamper-1.5.6-1             | CURRENT -- readme
+toolenv-1.1-1                   | ~CURRENT -- pom
+twitter-0.7-1                   | CURRENT -- test
+unicorn-0.1.1-3                 | CURRENT -- pom,gitignore
+webtestpresenter-0.23-3         | CURRENT -- pom
+xvnc-1.14-1                     | CURRENT -- pom
 
 ----
 # $repoMap of $id => repo
@@ -64,6 +56,7 @@ ColumnPack-plugin            | hanabishi/ColumnPack
 ColumnsPlugin                | skip    # renamed to ColumnPack-plugin
 cucumber                     | masterthought/jenkins-cucumber-jvm-reports-plugin
 custom-tools-plugin          | customtools-plugin
+CustomHistory                | custom-history-plugin
 devstack                     | echohead/jenkins-devstack-plugin
 dynamicparameter             | Seitenbau/sb-jenkins-dynamicparameter
 exclusive-label-plugin       | exclusive-labels-plugin
@@ -138,6 +131,9 @@ startup-trigger-plugin       | startup-trigger-plugin-plugin
 synergy                      | synergy_scm-plugin
 testng-plugin                | testng-plugin-plugin
 throttle-concurrents         | throttle-concurrent-builds-plugin
+zmq-event-publisher          | openstack-infra/zmq-event-publisher
+build-monitor-plugin         | jan-molak/jenkins-build-monitor-plugin
+appio                        | app.io-plugin
 
 analysis-config              | skip    # just a dependency, not a plugin
 analysis-pom                 | skip    # just a parent pom, not a plugin
@@ -218,6 +214,7 @@ script-realm-extended        | skip    # plugin is deprecated
 security-no-captcha          | skip    # plugin is deprecated
 serenitec                    | skip    # no longer published; see perfpublisher
 setenv                       | skip    # plugin is deprecated
+sms-notification             | skip    # released as sms
 svnkit                       | skip    # not a plugin
 testbed-ant-sample           | skip    # not a plugin
 testbed-anttest-sample       | skip    # not a plugin
