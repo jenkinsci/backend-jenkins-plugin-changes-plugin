@@ -14,6 +14,7 @@ label-verifier-1.0-3            | ~CURRENT -- pom
 m2-repo-reaper-1.0-4            | CURRENT -- pom
 matrixtieparent-1.2-1           | ~CURRENT -- pom
 perfpublisher-7.97-1            | ~CURRENT -- pom
+sms-1.1-1                       | ~CURRENT -- pom
 starteam-0.6.11-1               | ~CURRENT -- pom
 timestamper-1.5.6-1             | CURRENT -- readme
 toolenv-1.1-1                   | ~CURRENT -- pom
@@ -55,6 +56,7 @@ ColumnPack-plugin            | hanabishi/ColumnPack
 ColumnsPlugin                | skip    # renamed to ColumnPack-plugin
 cucumber                     | masterthought/jenkins-cucumber-jvm-reports-plugin
 custom-tools-plugin          | customtools-plugin
+CustomHistory                | custom-history-plugin
 devstack                     | echohead/jenkins-devstack-plugin
 dynamicparameter             | Seitenbau/sb-jenkins-dynamicparameter
 exclusive-label-plugin       | exclusive-labels-plugin
@@ -129,6 +131,9 @@ startup-trigger-plugin       | startup-trigger-plugin-plugin
 synergy                      | synergy_scm-plugin
 testng-plugin                | testng-plugin-plugin
 throttle-concurrents         | throttle-concurrent-builds-plugin
+zmq-event-publisher          | openstack-infra/zmq-event-publisher
+build-monitor-plugin         | jan-molak/jenkins-build-monitor-plugin
+appio                        | app.io-plugin
 
 analysis-config              | skip    # just a dependency, not a plugin
 analysis-pom                 | skip    # just a parent pom, not a plugin
@@ -209,6 +214,7 @@ script-realm-extended        | skip    # plugin is deprecated
 security-no-captcha          | skip    # plugin is deprecated
 serenitec                    | skip    # no longer published; see perfpublisher
 setenv                       | skip    # plugin is deprecated
+sms-notification             | skip    # released as sms
 svnkit                       | skip    # not a plugin
 testbed-ant-sample           | skip    # not a plugin
 testbed-anttest-sample       | skip    # not a plugin
