@@ -84,7 +84,6 @@ nopmdcheck                   | Quramy/nopmdcheck
 nopmdverifytrac              | Quramy/nopmdverifytrac
 pending-changes              | pendingchanges-plugin
 perl                         | melezhik/perl-plugin
-rbenv                        | hsbt/jenkins-rbenv-plugin
 rubymotion                   | Watson1978/jenkins-rubymotion-plugin
 scripted-cloud-plugin        | hisatti77/scripted-cloud-plugin
 selenium-builder             | rossrowe/selenium-builder-plugin
@@ -132,6 +131,28 @@ throttle-concurrents         | throttle-concurrent-builds-plugin
 zmq-event-publisher          | openstack-infra/zmq-event-publisher
 build-monitor-plugin         | jan-molak/jenkins-build-monitor-plugin
 appio                        | app.io-plugin
+rally-update-plugin-1        | jenkinsci/rally-update-plugin-1
+rapiddeploy-jenkins          | rapiddeploy-plugin
+cluster-stats                | jenkinsci/cluster-stats
+kiuwanJenkinsPlugin          | kiuwan-plugin
+otabuilder                   | ios-otabuilder-plugin
+buildgraph-view              | jenkinsci/buildgraph-view
+enhanced-old-build-discarder | jenkinsci/enhanced-old-build-discarder
+sonar                        | SonarSource/jenkins-sonar-plugin
+collabnet-uc4-deploy         | skip    # renamed to collabnet-automic-deploy
+flow                         | flowtechnologies/jenkins-flow-plugin
+loaderio-jenkins-plugin      | loaderio-plugin
+project-inheritance          | i-m-c/jenkins-inheritance-plugin
+gitlab-merge-request-jenkins | gitlab-merge-request-builder-plugin
+cucumber-perf                | cucumber-performance-plugin
+dependency-check-jenkins-plugin | dependency-check-plugin
+jshint-checkstyle            | jshint-checkstyle-plugin
+writable-filesystem-monitor  | jenkinsci/writable-filesystem-monitor
+ 
+jslint-checkstyle            | skip    # renamed to jshint-checkstyle-plugin
+junit-realtime-test-reporter | skip    # temporary plugin until moved to core
+pretest-commit               | skip    # renamed to pretested-integration-plugin
+
 
 analysis-config              | skip    # just a dependency, not a plugin
 analysis-pom                 | skip    # just a parent pom, not a plugin
