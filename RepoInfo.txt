@@ -86,7 +86,6 @@ pending-changes              | pendingchanges-plugin
 perl                         | melezhik/perl-plugin
 rubymotion                   | Watson1978/jenkins-rubymotion-plugin
 scripted-cloud-plugin        | hisatti77/scripted-cloud-plugin
-selenium-builder             | rossrowe/selenium-builder-plugin
 simple-parameterized-builds-report | nullin/simple-parameterized-builds-report
 sladiator-notifier           | sladiator-plugin
 sonatype-ci                  | sonatype/sonatype-ci-for-jenkins
@@ -144,16 +143,15 @@ flow                         | flowtechnologies/jenkins-flow-plugin
 loaderio-jenkins-plugin      | loaderio-plugin
 project-inheritance          | i-m-c/jenkins-inheritance-plugin
 gitlab-merge-request-jenkins | gitlab-merge-request-builder-plugin
-cucumber-perf                | cucumber-performance-plugin
+cucumber-perf                | TrueDub/cucumber-performance
 dependency-check-jenkins-plugin | dependency-check-plugin
 jshint-checkstyle            | jshint-checkstyle-plugin
 writable-filesystem-monitor  | jenkinsci/writable-filesystem-monitor
+ansicolor                    | dblock/jenkins-ansicolor-plugin
  
 jslint-checkstyle            | skip    # renamed to jshint-checkstyle-plugin
 junit-realtime-test-reporter | skip    # temporary plugin until moved to core
 pretest-commit               | skip    # renamed to pretested-integration-plugin
-
-
 analysis-config              | skip    # just a dependency, not a plugin
 analysis-pom                 | skip    # just a parent pom, not a plugin
 analysis-suite               | skip    # just a parent pom, not a plugin
