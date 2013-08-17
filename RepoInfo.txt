@@ -4,8 +4,6 @@
 # changes since the last release don't actually change anything in a
 # release (such as pom changes or unit tests).
 # For plugin $id with $cnt revs since version $ver, show given message.
-blame-upstream-commiters-1.2-1  | CURRENT -- cleanup
-chucknorris-0.4-6               | ~CURRENT -- jenkinify,pom
 copy-data-to-workspace-plugin-1.0-1 | ~CURRENT -- pom
 deploy-websphere-1.0-1          | CURRENT -- pom
 grinder-1.4-3                   | CURRENT -- pom
@@ -245,11 +243,17 @@ virtualbox                   | virtualbox-parent|VER_OK
 ----
 # $reallyGithub of $id
 # For plugins that migrate to github but have not yet run a release there.
+blame-upstream-commiters
 chucknorris
 downstream-ext
+grinder
+hudsontrayapp
+label-verifier
 locks-and-latches
+m2-repo-reaper
 nodejs
 piwikanalytics
 reviewboard
 rvm
 virtualbox
+webtestpresenter
