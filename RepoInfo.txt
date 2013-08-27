@@ -673,7 +673,7 @@ dependency-check-jenkins-plugin | dependency-check-plugin
 jshint-checkstyle            | jshint-checkstyle-plugin
 writable-filesystem-monitor  | jenkinsci/writable-filesystem-monitor
 ansicolor                    | dblock/jenkins-ansicolor-plugin
-DK_Parameter_Plugin          | jenkinsci/JDK_Parameter_Choice
+JDK_Parameter_Plugin          | jenkinsci/JDK_Parameter_Choice
 graphiteIntegrator           | jenkinsci/graphite-plugin
  
 jslint-checkstyle            | skip    # renamed to jshint-checkstyle-plugin
