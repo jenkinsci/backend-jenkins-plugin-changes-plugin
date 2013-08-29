@@ -16,6 +16,7 @@ anything-goes-formatter-1.0-2            | CURRENT -- pom
 appaloosa-plugin-1.4.0-1                 | CURRENT -- pom
 appdynamics-dashboard-1.0.1-1            | CURRENT -- pom
 application-director-plugin-1.3-1        | CURRENT -- pom
+appthwack-1.2-1                          | CURRENT -- pom
 artifact-diff-plugin-1.2-1               | CURRENT -- pom
 artifactdeployer-0.27-1                  | CURRENT -- pom
 asakusa-satellite-plugin-0.1.1-1         | CURRENT -- pom
@@ -180,7 +181,7 @@ girls-1.0.0-1                            | CURRENT -- pom
 git-chooser-alternative-1.0-1            | CURRENT -- pom
 git-server-1.2-1                         | CURRENT -- pom
 git-userContent-1.3-2                    | CURRENT -- pom
-github-1.7-1                             | CURRENT -- pom
+github-1.8-1                             | CURRENT -- pom
 github-api-1.43-1                        | CURRENT -- pom
 github-oauth-0.14-2                      | CURRENT -- pom
 github-sqs-plugin-1.5-1                  | CURRENT -- pom
@@ -217,7 +218,7 @@ ion-deployer-plugin-0.9-2                | CURRENT -- pom
 iphoneview-0.2-1                         | CURRENT -- pom
 ipmessenger-plugin-1.2-2                 | CURRENT -- pom
 ivy-1.23.2-1                             | CURRENT -- pom
-ivytrigger-0.29-1                        | CURRENT -- pom
+ivytrigger-0.30-1                        | CURRENT -- pom
 jabber-1.25-1                            | CURRENT -- pom
 jacoco-1.0.13-2                          | CURRENT -- pom,readme
 japex-1.7-1                              | CURRENT -- pom
@@ -227,7 +228,9 @@ javanet-uploader-1.7-1                   | CURRENT -- pom
 javatest-report-1.4-1                    | CURRENT -- pom
 jboss-1.0.5-2                            | CURRENT -- pom
 jcaptcha-plugin-1.1-2                    | CURRENT -- pom
+jclouds-jenkins-2.4-1                    | CURRENT -- pom
 jdepend-1.2.3-1                          | CURRENT -- pom
+JDK_Parameter_Plugin-1.0-1               | CURRENT -- pom
 jenkins-cloudformation-plugin-0.11-2     | CURRENT -- pom
 jenkins-flowdock-plugin-1.1.2-1          | CURRENT -- pom
 jenkins-jira-issue-updater-1.3-1         | CURRENT -- pom
@@ -238,6 +241,7 @@ job-direct-mail-1.5-1                    | CURRENT -- pom
 job-exporter-0.4-1                       | CURRENT -- pom
 job-log-logger-plugin-1.0-2              | CURRENT -- pom
 job-poll-action-plugin-1.0-2             | CURRENT -- pom
+job-restrictions-0.1-1                   | CURRENT -- pom
 job-strongauth-simple-0.5-2              | CURRENT -- pom
 jobcopy-builder-1.1.0-1                  | CURRENT -- pom
 jobgenerator-1.18-1                      | CURRENT -- pom
@@ -304,6 +308,7 @@ mock-slave-1.1-1                         | CURRENT -- pom
 mogotest-0.1.0-1                         | CURRENT -- pom
 mongodb-1.3-1                            | CURRENT -- pom
 mongodb-document-upload-1.0-2            | CURRENT -- pom
+monitor-remote-job-plugin-1.0-1          | CURRENT -- pom
 monkit-plugin-0.2.6-2                    | CURRENT -- pom
 mozmill-1.3-1                            | CURRENT -- pom
 mqtt-notification-plugin-1.1-2           | CURRENT -- pom
@@ -330,13 +335,14 @@ nopmdverifytrac-0.9-1                    | CURRENT -- pom
 notification-1.5-1                       | CURRENT -- pom
 notifo-1.0.2-1                           | CURRENT -- pom
 nsiqcollector-1.3.3-1                    | CURRENT -- pom
+nunit-0.15-1                             | CURRENT -- pom
 offlineonfailure-plugin-1.0-2            | CURRENT -- pom
 openid-1.7-3                             | CURRENT -- pom,gitignore
 openJDK-native-plugin-1.0-2              | CURRENT -- pom
 origo-issue-notifier-1.1-1               | CURRENT -- pom
 oslc-cm-1.31-2                           | CURRENT -- pom
 ownership-0.2.1-1                        | CURRENT -- pom
-parameterized-trigger-2.20-2             | CURRENT -- pom
+parameterized-trigger-2.20-1             | CURRENT -- pom
 patch-parameter-1.1-1                    | CURRENT -- pom
 pathignore-0.6-1                         | CURRENT -- pom
 pending-changes-0.3.0-1                  | CURRENT -- pom
@@ -408,7 +414,7 @@ scons-0.4-2                              | CURRENT -- pom
 script-scm-1.12-1                        | CURRENT -- pom
 scripted-cloud-plugin-0.12-1             | CURRENT -- pom
 scriptler-2.6.1-1                        | CURRENT -- pom
-scripttrigger-0.30-1                     | CURRENT -- pom
+scripttrigger-0.31-1                     | CURRENT -- pom
 search-all-results-plugin-1.0-1          | CURRENT -- pom
 sectioned-view-1.18-1                    | CURRENT -- pom
 selection-tasks-plugin-1.0-1             | CURRENT -- pom
@@ -459,6 +465,7 @@ stepcounter-1.3.2-1                      | CURRENT -- pom
 storable-configs-plugin-1.0-1            | CURRENT -- pom
 strawboss-1.1-2                          | CURRENT -- pom
 summary_report-1.9-1                     | CURRENT -- pom
+suppress-stack-trace-1.2-1               | CURRENT -- pom
 Surround-SCM-plugin-1.2-1                | CURRENT -- pom
 svn-release-mgr-1.2-1                    | CURRENT -- pom
 svn-revert-plugin-1.3-2                  | CURRENT -- pom
