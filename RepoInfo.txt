@@ -61,6 +61,7 @@ call-remote-job-plugin-1.0.20-1          | CURRENT -- pom
 cas-plugin-1.1.1-1                       | CURRENT -- pom
 cas1-1.0.1-2                             | CURRENT -- pom
 categorized-view-1.0-1                   | CURRENT -- pom
+ccm-3.0.1-1                              | CURRENT -- pom
 cccc-0.6-2                               | CURRENT -- pom
 changes-since-last-success-0.5-1         | CURRENT -- pom
 checkstyle-3.37-1                        | CURRENT -- pom
