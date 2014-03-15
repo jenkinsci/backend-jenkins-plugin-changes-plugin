@@ -13,7 +13,6 @@ anything-goes-formatter-1.0-2            | CURRENT -- pom
 appaloosa-plugin-1.4.0-1                 | CURRENT -- pom
 appdynamics-dashboard-1.0.1-1            | CURRENT -- pom
 application-director-plugin-1.3-1        | CURRENT -- pom
-appthwack-1.2-1                          | CURRENT -- pom
 artifact-diff-plugin-1.2-1               | CURRENT -- pom
 asakusa-satellite-plugin-0.1.1-1         | CURRENT -- pom
 async-http-client-1.7.8-1                | CURRENT -- pom
@@ -69,7 +68,6 @@ countjobs-viewstabbar-1.0.0-2            | CURRENT -- pom
 covcomplplot-1.1.4-2                     | CURRENT -- pom
 cppncss-1.1-1                            | CURRENT -- pom
 crap4j-0.8-1                             | CURRENT -- pom
-createjobadvanced-1.7.2-1                | CURRENT -- pom
 crittercism-dsym-1.1-1                   | CURRENT -- pom
 CustomHistory-1.6-1                      | CURRENT -- pom
 cvs-tag-1.7-2                            | CURRENT -- pom
@@ -144,8 +142,6 @@ html-audio-notifier-0.4-2                | CURRENT -- pom
 hudson-logaction-plugin-1.1-1            | CURRENT -- pom
 hudson-pview-plugin-1.8-1                | CURRENT -- pom
 hudson-wsclean-plugin-1.0.4-1            | CURRENT -- pom
-hudsontrayapp-0.7.3-2                    | CURRENT -- pom
-humbug-0.1.1-1                           | CURRENT -- pom
 image-gallery-1.0-1                      | CURRENT -- pom
 ion-deployer-plugin-0.9-2                | CURRENT -- pom
 iphoneview-0.2-1                         | CURRENT -- pom
@@ -159,15 +155,12 @@ javanet-uploader-1.7-1                   | CURRENT -- pom
 javatest-report-1.4-1                    | CURRENT -- pom
 jboss-1.0.5-2                            | CURRENT -- pom
 jcaptcha-plugin-1.1-2                    | CURRENT -- pom
-jclouds-jenkins-2.4-1                    | CURRENT -- pom
 jdepend-1.2.3-1                          | CURRENT -- pom
-JDK_Parameter_Plugin-1.0-1               | CURRENT -- pom
 jenkins-cloudformation-plugin-0.11-2     | CURRENT -- pom
 jigomerge-0.7-2                          | CURRENT -- pom
 JiraTestResultReporter-1.04-2            | CURRENT -- pom
 job-exporter-0.4-1                       | CURRENT -- pom
 job-log-logger-plugin-1.0-2              | CURRENT -- pom
-job-restrictions-0.1-1                   | CURRENT -- pom
 job-strongauth-simple-0.5-2              | CURRENT -- pom
 jobrequeue-1.0-2                         | CURRENT -- pom
 jobrevision-0.6-2                        | CURRENT -- pom
@@ -207,9 +200,7 @@ Matrix-sorter-plugin-1.1-2               | CURRENT -- pom
 matrixtieparent-1.2-1                    | ~CURRENT -- pom
 maven-dependency-update-trigger-1.4-2    | CURRENT -- pom
 maven-deployment-linker-1.5.1-1          | CURRENT -- pom
-maven-info-0.0.4-2                       | CURRENT -- pom
 maven-invoker-plugin-1.2-1               | CURRENT -- pom
-maven-metadata-plugin-1.0.0-1            | CURRENT -- pom
 maven-release-cascade-1.3.2-1            | CURRENT -- pom
 maven-repo-cleaner-1.2-1                 | CURRENT -- pom
 measurement-plots-0.1-1                  | CURRENT -- pom
@@ -217,7 +208,6 @@ memegen-0.4.3-2                          | CURRENT -- pom
 mogotest-0.1.0-1                         | CURRENT -- pom
 mongodb-1.3-1                            | CURRENT -- pom
 mongodb-document-upload-1.0-2            | CURRENT -- pom
-monitor-remote-job-plugin-1.0-1          | CURRENT -- pom
 monkit-plugin-0.2.6-2                    | CURRENT -- pom
 mozmill-1.3-1                            | CURRENT -- pom
 mqtt-notification-plugin-1.1-2           | CURRENT -- pom
@@ -269,7 +259,6 @@ python-1.2-2                             | CURRENT -- pom
 qc-1.2.1-2                               | CURRENT -- pom
 r-0.2-1                                  | CURRENT -- pom
 rad-builder-1.1.4-1                      | CURRENT -- pom
-rake-1.7.8-1                             | CURRENT -- pom
 random-string-parameter-1.0-1            | CURRENT -- pom
 refit-0.3.1-1                            | CURRENT -- pom
 regexemail-0.3-1                         | CURRENT -- pom
@@ -280,7 +269,6 @@ rqm-plugin-1.0-1                         | CURRENT -- pom
 rrod-1.1.0-1                             | CURRENT -- pom
 ruby-1.2-1                               | CURRENT -- pom
 ruby-runtime-0.9-2                       | CURRENT -- pom
-run-condition-0.10-1                     | CURRENT -- pom
 scala-junit-name-decoder-1.0-1           | CURRENT -- pom
 Schmant-1.1.4-1                          | CURRENT -- pom
 scons-0.4-2                              | CURRENT -- pom
@@ -323,7 +311,6 @@ statusmonitor-1.3-2                      | CURRENT -- pom
 stepcounter-1.3.2-1                      | CURRENT -- pom
 storable-configs-plugin-1.0-1            | CURRENT -- pom
 strawboss-1.1-2                          | CURRENT -- pom
-suppress-stack-trace-1.2-1               | CURRENT -- pom
 Surround-SCM-plugin-1.2-1                | CURRENT -- pom
 svn-release-mgr-1.2-1                    | CURRENT -- pom
 svn-tag-1.16-2                           | CURRENT -- pom
@@ -333,7 +320,6 @@ svnpublisher-0.1-1                       | CURRENT -- pom
 tag-profiler-0.2-1                       | CURRENT -- pom
 tattletale-plugin-0.3-1                  | CURRENT -- pom
 team-views-0.9.0-1                       | CURRENT -- pom
-template-project-1.4-1                   | CURRENT -- pom
 template-workflows-1.2-1                 | CURRENT -- pom
 tepco-0.1-2                              | CURRENT -- pom
 tepco-epuw-1.0-2                         | CURRENT -- pom
@@ -362,7 +348,6 @@ versioncolumn-0.2-2                      | CURRENT -- pom
 versionnumber-1.4.1-2                    | CURRENT -- pom
 vertx-1.0.1-1                            | CURRENT -- pom
 visualworks-store-1.0-1                  | CURRENT -- pom
-vs-code-metrics-1.6-1                    | CURRENT -- pom
 vss-1.9-2                                | CURRENT -- pom
 was-builder-1.6.1-1                      | CURRENT -- pom
 websocket-1.0.6-1                        | CURRENT -- pom
